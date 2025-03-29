@@ -1,35 +1,30 @@
 package Main.GUI.Player;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import Main.Game.Character.Player;
-
+import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 
 public class PlayerView extends JPanel {
-    Player player;
-    BufferedImage sprite;
-
+    private Player player;
+    private ImageIcon playerImageR = new ImageIcon("/Users/svenfischer/IdeaProjects/LastSurvivor/src/Resources/Images/PlayerR.png");
+    private ImageIcon playerImageL = new ImageIcon("/Users/svenfischer/IdeaProjects/LastSurvivor/src/Resources/Images/PlayerL.png");
+    private ImageIcon playerImage;
     public PlayerView(Player player) {
         this.player = player;
-        try {
-            sprite = ImageIO.read(getClass().getResource("/Resources/Images/Basic Undead 4x.png"));        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.playerImage = playerImageR ;
+        setOpaque(false);
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if(sprite != null) {
-            int x = (int) player.getX();
-            int y = (int) player.getY();
-            g.drawImage(sprite, x, y, null);
-        }
-    }
-    public void update(){
-        repaint();
+    @Override
+    protected void paintComponent(Graphics g) {
+        // Draw player
+        if (player.isRotation()) {
+            playerImage = playerImageL;
+        }else playerImage = playerImageR;
+        playerImage.paintIcon(this, g, (int)player.getX(), (int)player.getY());
+
+        // Draw player info
+        g.setColor(Color.WHITE);
+        g.drawString("Player Position: (" + (int)player.getX() + ", " + (int)player.getY() + ")", 10, 20);
     }
 }
-
