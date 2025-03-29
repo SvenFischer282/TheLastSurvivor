@@ -2,8 +2,8 @@ package Main.Game.Character;
 
 public class Character {
     private int health;
-    private int positionX;
-    private int positionY;
+    private float positionX;
+    private float positionY;
 
     public Character(int health, int positionX, int positionY) {
         this.health = health;
@@ -19,19 +19,19 @@ public class Character {
         this.health = health;
     }
 
-    public int getPositionX() {
+    public float getPositionX() {
         return positionX;
     }
 
-    public void setPositionX(int positionX) {
+    public void setPositionX(float positionX) {
         this.positionX = positionX;
     }
 
-    public int getPositionY() {
+    public float getPositionY() {
         return positionY;
     }
 
-    public void setPositionY(int positionY) {
+    public void setPositionY(float positionY) {
         this.positionY = positionY;
     }
 }

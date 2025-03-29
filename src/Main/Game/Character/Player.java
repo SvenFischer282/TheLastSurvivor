@@ -1,18 +1,33 @@
 package Main.Game.Character;
 
 public class Player extends Character {
-    private int strength;
-    public Player(int health, int positionX, int positionY) {
-        super(health, positionX, positionY);
+
+            // Movement speed (pixels per second)
+    private float vx, vy;
+    private int health;// Velocity in x and y directions
+    private float speed;
+
+    public Player(int x, int y) {
+      super(10, x, y);
+        this.vx = 0;
+        this.vy = 0;
     }
-    public int getStrength() {
-        return strength;
+
+    // Update position based on velocity and delta time
+    public void update(float deltaTime) {
+        setPositionX(vx * deltaTime);
+        setPositionY(vy * deltaTime);
     }
-    public void setStrength(int strength) {
-        strength = strength;
+
+    // Setters for velocity based on input
+    public void setVelocity(float vx, float vy) {
+        this.vx = vx;
+        this.vy = vy;
     }
-    public void move(int dx, int dy) {
-        this.setPositionX(this.getPositionX() + dx);
-        this.setPositionY(this.getPositionY() + dy);
-    }
+
+    // Getters
+    public float getX() { return getPositionX(); }
+    public float getY() { return getPositionY(); }
+    public float getSpeed() { return speed; }
+
 }

@@ -1,36 +1,49 @@
 package Main.GUI;
-import javax.swing.*;
 
-// Main class
-class MainApp {
+import Main.Game.Character.Player;
+import Main.GUI.Player.PlayerController;
+import Main.GUI.Player.PlayerView;
 
-    // Main driver method
-    public static void main(String[] args)
-    {
-        int posX = 50;
-        int posY = 50;
-        // Creating instance of JFrame
-        JFrame frame = new JFrame();
+import javax.swing.JFrame;
+import javax.swing.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-        // Creating instance of JButton
-        JButton button = new JButton(" GFG WebSite Click");
+public class MainApp {
+    private static final int FPS = 60; // Target frames per second
+    private static final float DELTA_TIME = 1.0f / FPS; // Time per frame in seconds
 
-        button.setBounds(posX, posY, 220, 50);
-        button.addActionListener(e->{
-            button.setLocation(posX +50, posY);
+    public static void main(String[] args) {
+        // Initialize components
+        Player player = new Player(100, 100); // x, y,
+        PlayerView view = new PlayerView(player);
+        PlayerController controller = new PlayerController(player);
 
-        });
-
-        // adding button in JFrame
-        frame.add(button);
-
-        // 400 width and 500 height
-        frame.setSize(500, 600);
-
-        // using no layout managers
-        frame.setLayout(null);
-
-        // making the frame visible
+        // Set up JFrame
+        JFrame frame = new JFrame("LastSurvivor");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(view);
+        frame.addKeyListener(controller);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        frame.setFocusable(true); // Ensure frame can receive key events
+        frame.requestFocusInWindow();
+        // Game loop using Timer
+        Timer timer = new Timer(1000 / FPS, new ActionListener() {
+            private long lastTime = System.nanoTime();
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                long currentTime = System.nanoTime();
+                float deltaTime = (currentTime - lastTime) / 1_000_000_000.0f; // Convert to seconds
+                lastTime = currentTime;
+
+                // Update game state
+                player.update(deltaTime);
+                view.update();
+            }
+        });
+        timer.start();
     }
 }
