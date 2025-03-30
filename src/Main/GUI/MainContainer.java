@@ -2,30 +2,36 @@ package Main.GUI;
 
 import Main.Game.Character.Player;
 import Main.GUI.Player.PlayerView;
+import Main.GUI.Weapons.Gun.GunView;
+import Main.Game.Weapons.Gun;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class MainContainer extends JPanel {
     private PlayerView playerView;
+    private GunView gunView;
 
-    public MainContainer(Player player) {
-        // Set up the main container layout
-        setLayout(new BorderLayout());
+    public MainContainer(Player player, Gun gun) {
+        setLayout(new OverlayLayout(this)); // Changed to OverlayLayout
 
-        // Initialize the player view
+        // Initialize views
         playerView = new PlayerView(player);
+        gunView = new GunView(player, gun);
 
-        // Add player view to center (will expand to fill available space)
-        add(playerView, BorderLayout.CENTER);
+        // Add views (gunView on top of playerView)
+        add(gunView);
+        add(playerView);
 
-        // Set background (will be visible if playerView is non-opaque)
         setBackground(Color.BLACK);
-
-        // Set preferred size for the whole container
         setPreferredSize(new Dimension(800, 600));
     }
 
     public PlayerView getPlayerView() {
         return playerView;
+    }
+
+    public GunView getGunView() {
+        return gunView;
     }
 }

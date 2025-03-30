@@ -10,7 +10,7 @@ public class Player extends Character {
         super(10, x, y);
         this.vx = 0;
         this.vy = 0;
-        this.speed = 200.0f; // Default speed
+        this.speed = 500.0f; // Default speed
         this.rotation = false;
     }
 
