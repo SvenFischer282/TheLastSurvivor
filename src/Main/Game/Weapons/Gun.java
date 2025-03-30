@@ -32,6 +32,7 @@ public class Gun extends Weapon {
             bulletActive = true;
             bulletPosX = player.getPositionX();
             bulletPosY = player.getPositionY();
+
             scheduler.schedule(() -> {
                 canShoot = true;
 

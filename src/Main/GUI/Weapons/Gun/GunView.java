@@ -29,7 +29,7 @@ public class GunView extends JPanel {
             int bulletX = (int) gun.getBulletPosX() - BULLET_SIZE / 2;
             int bulletY = (int) gun.getBulletPosY() - BULLET_SIZE / 2;
             g2d.fillOval(bulletX, bulletY, BULLET_SIZE, BULLET_SIZE);
-
+            // Debug info
         }
     }
 
