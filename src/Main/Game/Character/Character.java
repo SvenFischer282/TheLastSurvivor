@@ -19,7 +19,7 @@ public class Character {
         this.health = health;
     }
 
-    public float getPositionX() {
+    public float getX() {
         return positionX;
     }
 
@@ -27,7 +27,7 @@ public class Character {
         this.positionX = positionX;
     }
 
-    public float getPositionY() {
+    public float getY() {
         return positionY;
     }
 

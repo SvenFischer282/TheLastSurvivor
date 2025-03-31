@@ -5,17 +5,29 @@ import Main.Game.Character.Player;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Visual representation of the gun and its bullet.
+ */
 public class GunView extends JPanel {
     private final Gun gun;
     private final Player player;
     private static final int BULLET_SIZE = 10;
 
+    /**
+     * Constructs a new GunView instance.
+     * @param player The player associated with the gun
+     * @param gun The gun to visualize
+     */
     public GunView(Player player, Gun gun) {
         this.player = player;
         this.gun = gun;
         setOpaque(false);
     }
 
+    /**
+     * Paints the bullet when active.
+     * @param g The graphics context to draw on
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -33,6 +45,10 @@ public class GunView extends JPanel {
         }
     }
 
+    /**
+     * Returns the preferred size of the panel.
+     * @return Dimension object with width 800 and height 600
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(800, 600);

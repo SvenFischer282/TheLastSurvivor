@@ -6,6 +6,7 @@ import java.awt.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 
 public class PlayerView extends JPanel {
     private final Player player;
@@ -14,14 +15,14 @@ public class PlayerView extends JPanel {
 
     public PlayerView(Player player) {
         this.player = player;
-        setPreferredSize(new Dimension(800, 600));
+//        setPreferredSize(new Dimension(800, 600));
         setOpaque(true);
         setBackground(Color.BLACK);
 
         // Load both player images
         try {
-            playerImageR = ImageIO.read(getClass().getResource("/Images/PlayerR.png"));
-            playerImageL = ImageIO.read(getClass().getResource("/Images/PlayerL.png"));
+            playerImageR = ImageIO.read(Objects.requireNonNull(getClass().getResource("/Images/PlayerR.png")));
+            playerImageL = ImageIO.read(Objects.requireNonNull(getClass().getResource("/Images/PlayerL.png")));
         } catch (IOException | IllegalArgumentException e) {
             System.err.println("Error loading player images:");
             e.printStackTrace();
@@ -52,6 +53,7 @@ public class PlayerView extends JPanel {
 
         // Draw debug info
         g.setColor(Color.WHITE);
-        g.drawString(String.format("Player: %.0f  %.0f", player.getX(), player.getY()), 10, 20);
+        g.drawString(String.format("Player:%.0f  %.0f",player.getX(),  player.getY()), 10, 20);
+        g.drawString(String.format("Health:%d", player.getHealth()), 10, 40);
     }
 }

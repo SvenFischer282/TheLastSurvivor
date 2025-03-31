@@ -10,7 +10,15 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Main application class for the game demo.
+ */
 public class MainApp {
+    /**
+     * Entry point for the application.
+     * @param args Command line arguments (not used)
+     */
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             // Create model
@@ -19,6 +27,8 @@ public class MainApp {
 
             // Create main container with player view and gun view
             MainContainer mainContainer = new MainContainer(player, gun);
+            player.setPositionX(600);
+            player.setPositionY(500);
 
             // Set up the frame
             JFrame frame = new JFrame("Player Movement Demo");
@@ -36,7 +46,7 @@ public class MainApp {
             mainContainer.getGunView().addMouseListener(gunController);
             mainContainer.getGunView().setFocusable(true);
 
-            frame.setSize(800, 600);
+            frame.setSize( 1200, 750);
 
             frame.setVisible(true);
             SwingUtilities.invokeLater(() -> {
