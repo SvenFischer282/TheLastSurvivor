@@ -26,6 +26,7 @@ public class Player extends Character {
      * Updates the player's position based on velocity and time elapsed.
      * @param deltaTime Time elapsed since last update
      */
+    @Override
     public void update(float deltaTime) {
         float changeX = getX() + vx * deltaTime;
         float changeY = getY() + vy * deltaTime;
@@ -43,6 +44,11 @@ public class Player extends Character {
         }
         setPositionX(changeX);
         setPositionY(changeY);
+    }
+
+    @Override
+    public void update(float deltaTime, Player player) {
+
     }
 
     /**

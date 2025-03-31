@@ -1,9 +1,11 @@
 package Main.GUI;
 
+import Main.Game.Character.Enemy;
 import Main.Game.Character.Player;
 import Main.GUI.Player.PlayerView;
 import Main.GUI.Weapons.Gun.GunView;
 import Main.Game.Weapons.Gun;
+import Main.GUI.Enemy.EnemyView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +16,7 @@ import java.awt.*;
 public class MainContainer extends JPanel {
     private PlayerView playerView;
     private GunView gunView;
+    private EnemyView enemyView;
     private int width;
     private int height;
 
@@ -22,7 +25,7 @@ public class MainContainer extends JPanel {
      * @param player The player to be displayed
      * @param gun The gun to be displayed
      */
-    public MainContainer(Player player, Gun gun) {
+    public MainContainer(Player player, Gun gun, Enemy enemy) {
         setLayout(new OverlayLayout(this)); // Changed to OverlayLayout
 
 
@@ -32,10 +35,13 @@ public class MainContainer extends JPanel {
         // Initialize views
         playerView = new PlayerView(player);
         gunView = new GunView(player, gun);
+        enemyView = new EnemyView(enemy);
+
 
         // Add views (gunView on top of playerView)
         add(gunView);
         add(playerView);
+        add(enemyView);
 
         setBackground(Color.BLACK);
         setPreferredSize(new Dimension(1200, 750));
@@ -56,6 +62,8 @@ public class MainContainer extends JPanel {
     public GunView getGunView() {
         return gunView;
     }
+
+    public EnemyView getEnemyView(){return  enemyView;}
 
 
 

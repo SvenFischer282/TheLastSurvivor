@@ -1,6 +1,6 @@
 package Main.Game.Character;
 
-public class Character {
+public abstract class Character {
     private int health;
     private float positionX;
     private float positionY;
@@ -22,7 +22,9 @@ public class Character {
     public float getX() {
         return positionX;
     }
-
+   public void update(float delta){
+        ;
+   }
     public void setPositionX(float positionX) {
         this.positionX = positionX;
     }
@@ -34,5 +36,7 @@ public class Character {
     public void setPositionY(float positionY) {
         this.positionY = positionY;
     }
+
+    public abstract void update(float deltaTime, Player player);
 }
 
