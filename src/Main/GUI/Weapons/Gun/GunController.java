@@ -21,7 +21,7 @@ public class GunController implements MouseListener {
     public GunController(Player player, Gun gun) {
         this.player = player;
         this.gun = gun;
-        this.speed = 600f;
+        this.speed = 800f;
     }
 
     /**

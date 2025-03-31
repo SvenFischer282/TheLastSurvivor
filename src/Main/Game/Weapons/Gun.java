@@ -15,8 +15,8 @@ public class Gun extends Weapon {
     private float bulletPosY;
     private float dx, dy;
     private boolean bulletActive;
-    private static final int SCREEN_WIDTH = 1100;
-    private static final int SCREEN_HEIGHT = 800;
+    private static final int SCREEN_WIDTH = 1200;
+    private static final int SCREEN_HEIGHT = 722;
 
     /**
      * Constructs a new Gun instance.
