@@ -21,10 +21,10 @@ public class MainApp {
             Player player = new Player(400, 300);
             Gun gun = new Gun(10, player);
             Enemy enemy = new Enemy(10, 100, 100, 2);
-            Zombie zombie = new Zombie(10, 100, 100, 2);
+            Zombie zombie = new Zombie(10, 200, 200, 2);
 
             // Hlavný kontajner
-            MainContainer mainContainer = new MainContainer(player, gun, enemy);
+            MainContainer mainContainer = new MainContainer(player, gun, zombie);
             player.setPositionX(600);
             player.setPositionY(500);
 
@@ -44,7 +44,7 @@ public class MainApp {
             GunController gunController = new GunController(player, gun);
             mainContainer.getGunView().addMouseListener(gunController);
 
-            EnemyController enemyController = new EnemyController(zombie);
+            EnemyController enemyController = new EnemyController(zombie,player);
 
             // Jedno vlákno pre hernú logiku (~60 FPS)
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();

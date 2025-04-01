@@ -11,7 +11,7 @@ public class EnemyView extends JComponent { // JComponent namiesto JPanel pre je
     private final Enemy enemy;
     private Image image;
 
-    public EnemyView(Enemy enemy) throws IOException {
+    public EnemyView(Enemy enemy)  {
         this.enemy = enemy;
     }
 

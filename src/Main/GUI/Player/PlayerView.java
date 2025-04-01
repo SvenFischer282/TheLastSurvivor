@@ -54,6 +54,6 @@ public class PlayerView extends JPanel {
         // Draw debug info
         g.setColor(Color.WHITE);
 //        g.drawString(String.format("Player:%.0f  %.0f",player.getX(),  player.getY()), 10, 20);
-        g.drawString(String.format("Health:%d", player.getHealth()), 10, 40);
+        g.drawString(String.format("Health:%d", player.getHealth()), 10, 20);
     }
 }
