@@ -1,15 +1,21 @@
 package Main.Game.Collectible;
 
-public class Coins implements Collectible {
+import Main.Game.Character.Player;
+
+public class Coins extends Item implements Collectible {
     private int value;
     private int x;
     private int y;
 
-
-
-    public void Collect() {
-        ;
+    public Coins(int x, int y, String name) {
+        super(x, y, name);
     }
+
+    @Override
+    public void collect(Player player) {
+        System.out.println("Coins collected");
+    }
+
 
 
     public int getValue() {

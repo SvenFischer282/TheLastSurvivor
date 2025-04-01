@@ -3,13 +3,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 public class Enemy extends Character {
-    int damage;
     float speed;
     boolean ableToHit;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     public Enemy(int health, int positionX, int positionY,int damage ) {
-        super(health, positionX, positionY);
-        this.damage = damage;
+        super(health, positionX, positionY,damage);
         this.speed = 500f;
         this.ableToHit = true;
     }
@@ -31,6 +29,7 @@ public class Enemy extends Character {
     }
     void attackPlayer(Player player) {
             System.out.println("Player was attacked!");
+            player.takeDamage(this.getDamage());
             ableToHit = false;
             scheduler.schedule(() -> ableToHit = true, 5, TimeUnit.SECONDS);
     }

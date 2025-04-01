@@ -1,7 +1,11 @@
 package Main.Game.Collectible;
 
+import Main.Game.Character.Player;
+
 public interface Collectible {
 
-    public void Collect();
+     void collect(Player player);
+
+
 
 }

@@ -4,11 +4,11 @@ import Main.Game.Character.Player;
 
 import java.awt.*;
 
-public abstract class  Item {
+public abstract class  Item implements Collectible {
 
-    int x;
-    int y;
-    String name;
+   private int x;
+   private int y;
+   private String name;
     public Item(int x, int y, String name) {
         this.x = x;
         this.y = y;
@@ -16,10 +16,10 @@ public abstract class  Item {
     }
 
 
-    void collect(Player player) {
+    public void collect(Player player) {
 
     }
-    void use(Player player) {
+    public void use(Player player) {
 
     }
 

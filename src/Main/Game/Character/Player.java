@@ -14,7 +14,8 @@ public class Player extends Character {
     private int health;
     private float speed;
     private boolean rotation;
-    private Gun gun; // Inštancia vnorenej triedy Gun
+    private final Gun gun; // Inštancia vnorenej triedy Gun
+    private static final int MAX_HEALTH = 10;
 
     /**
      * Constructs a new Player instance.
@@ -22,7 +23,7 @@ public class Player extends Character {
      * @param y Initial y-coordinate
      */
     public Player(int x, int y) {
-        super(10, x, y);
+        super(2, x, y,5);
         this.vx = 0;
         this.vy = 0;
         this.speed = 500.0f; // Default speed
@@ -45,6 +46,15 @@ public class Player extends Character {
         setPositionX(changeX);
         setPositionY(changeY);
         gun.update(deltaTime); // Aktualizácia zbrane
+    }
+    public void heal(int value){
+
+        if (value + this.getHealth() > MAX_HEALTH) {
+            this.setHealth(MAX_HEALTH);
+        }
+        else{
+            this.setHealth(this.getHealth() + value);
+        }
     }
 
     @Override
@@ -94,6 +104,7 @@ public class Player extends Character {
         private static final int SCREEN_WIDTH = 1200;
         private static final int SCREEN_HEIGHT = 722;
 
+
         public Gun(int damage) {
             super(damage);
             canShoot = true;
@@ -128,9 +139,10 @@ public class Player extends Character {
                 bulletPosY += dy * deltaTime;
 
                 if (bulletPosX < 0 || bulletPosX > SCREEN_WIDTH ||
-                        bulletPosY < 0 || bulletPosY > SCREEN_HEIGHT) {
+                        bulletPosY < 0 || bulletPosY > SCREEN_HEIGHT ) {
                     resetBullet();
                 }
+
             }
         }
 
