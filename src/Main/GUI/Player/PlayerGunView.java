@@ -3,30 +3,32 @@ package Main.GUI.Player;
 import Main.Game.Character.Player;
 import javax.swing.*;
 import java.awt.*;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Objects;
+import javax.imageio.ImageIO;
 
-public class PlayerView extends JPanel {
+/**
+ * Renders both the Player and its Gun.
+ */
+public class PlayerGunView extends JPanel {
     private final Player player;
+    private final Player.Gun gun;
     private Image playerImageR;
     private Image playerImageL;
+    private static final int BULLET_SIZE = 10;
 
-    public PlayerView(Player player) {
+    public PlayerGunView(Player player) {
         this.player = player;
-//        setPreferredSize(new Dimension(800, 600));
+        this.gun = player.getGun();
         setOpaque(true);
         setBackground(Color.BLACK);
 
-        // Load both player images
         try {
-            playerImageR = ImageIO.read(Objects.requireNonNull(getClass().getResource("/Images/PlayerR.png")));
-            playerImageL = ImageIO.read(Objects.requireNonNull(getClass().getResource("/Images/PlayerL.png")));
+            playerImageR = ImageIO.read(getClass().getResource("/Images/PlayerR.png"));
+            playerImageL = ImageIO.read(getClass().getResource("/Images/PlayerL.png"));
         } catch (IOException | IllegalArgumentException e) {
             System.err.println("Error loading player images:");
             e.printStackTrace();
-            // Create placeholders if images fail to load
             playerImageR = createPlaceholderImage(Color.RED);
             playerImageL = createPlaceholderImage(Color.BLUE);
         }
@@ -45,15 +47,22 @@ public class PlayerView extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Draw appropriate player image
+        // Render Player
         Image currentImage = player.isRotation() ? playerImageL : playerImageR;
         if (currentImage != null) {
-            g.drawImage(currentImage, (int)player.getX(), (int)player.getY(), this);
+            g.drawImage(currentImage, (int) player.getX(), (int) player.getY(), this);
         }
 
-        // Draw debug info
+        // Render Gun (bullet)
+        if (gun.isBulletActive()) {
+            g.setColor(Color.RED);
+            g.fillOval((int) gun.getBulletPosX() - BULLET_SIZE / 2,
+                    (int) gun.getBulletPosY() - BULLET_SIZE / 2,
+                    BULLET_SIZE, BULLET_SIZE);
+        }
+
+        // Debug info
         g.setColor(Color.WHITE);
-//        g.drawString(String.format("Player:%.0f  %.0f",player.getX(),  player.getY()), 10, 20);
         g.drawString(String.format("Health:%d", player.getHealth()), 10, 20);
     }
 }

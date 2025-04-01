@@ -3,21 +3,28 @@ package Main.GUI.Enemy;
 import Main.Game.Character.Enemy;
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.util.Objects;
-import javax.imageio.ImageIO;
 
-public class EnemyView extends JComponent { // JComponent namiesto JPanel pre jednoduchosť
+public class EnemyView extends JComponent {
     private final Enemy enemy;
-    private Image image;
 
-    public EnemyView(Enemy enemy)  {
+    public EnemyView(Enemy enemy) {
         this.enemy = enemy;
+        setOpaque(false); // Priehľadné pozadie
     }
 
     @Override
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
         g.setColor(Color.GREEN);
-        g.fillRect((int) enemy.getX(), (int) enemy.getY(), 32 , 32);
+        int x = (int) enemy.getX();
+        int y = (int) enemy.getY();
+        g.fillRect(x, y, 32, 32);
+
+
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(1200, 750); // Rovnaká veľkosť ako kontajner
     }
 }
