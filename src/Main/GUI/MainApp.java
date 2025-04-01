@@ -5,6 +5,7 @@ import Main.GUI.Player.PlayerController;
 import Main.GUI.Weapons.Gun.GunController;
 import Main.Game.Character.Enemy;
 import Main.Game.Character.Player;
+import Main.Game.Character.Zombie;
 import Main.Game.Weapons.Gun;
 
 import javax.swing.*;
@@ -16,82 +17,62 @@ import java.util.concurrent.TimeUnit;
 public class MainApp {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            // Create model
+            // Vytvorenie modelu
             Player player = new Player(400, 300);
             Gun gun = new Gun(10, player);
             Enemy enemy = new Enemy(10, 100, 100, 2);
+            Zombie zombie = new Zombie(10, 100, 100, 2);
 
-            // Create main container with player view and gun view
+            // Hlavný kontajner
             MainContainer mainContainer = new MainContainer(player, gun, enemy);
             player.setPositionX(600);
             player.setPositionY(500);
 
-            // Set up the frame
+            // Nastavenie okna
             JFrame frame = new JFrame("Player Movement Demo");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setContentPane(mainContainer);
-            frame.pack();
+            frame.setSize(1200, 750);
             frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
 
-            // Set up controllers
+            // Kontroléry
             PlayerController playerController = new PlayerController(player);
             mainContainer.getPlayerView().addKeyListener(playerController);
             mainContainer.getPlayerView().requestFocusInWindow();
 
             GunController gunController = new GunController(player, gun);
             mainContainer.getGunView().addMouseListener(gunController);
-            mainContainer.getGunView().setFocusable(true);
 
-            EnemyController enemyController = new EnemyController(enemy);
+            EnemyController enemyController = new EnemyController(zombie);
 
-            frame.setSize(1200, 750);
-            frame.setVisible(true);
-
-            // Debug output
-            SwingUtilities.invokeLater(() -> {
-                System.out.println("POST-VISIBLE DEBUG:");
-                System.out.println("Frame size: " + frame.getWidth() + "x" + frame.getHeight());
-                System.out.println("Content size: " + frame.getContentPane().getSize());
-            });
-
-            // Thread pool for game logic (2 threads: Player+Gun, Enemy)
-            ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
-
-            // Shared timing variable
+            // Jedno vlákno pre hernú logiku (~60 FPS)
+            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
             final long[] lastTime = {System.nanoTime()};
 
-            // Player and Gun update thread (~60 FPS)
-            executor.scheduleAtFixedRate(() -> {
-                long currentTime = System.nanoTime();
-                float deltaTime = Math.min((currentTime - lastTime[0]) / 1_000_000_000.0f, 0.1f); // Cap at 0.1s
-                lastTime[0] = currentTime;
-
-                synchronized (player) { // Synchronize on player since it’s shared
-                    playerController.update(deltaTime);
-                    gunController.update(deltaTime); // Gun updates after player
-                }
-
-                // Trigger repaint for player and gun views on EDT
-                SwingUtilities.invokeLater(() -> {
-                    mainContainer.getPlayerView().repaint();
-                    mainContainer.getGunView().repaint();
-                });
-            }, 0, 16, TimeUnit.MILLISECONDS);
-
-            // Enemy update thread (~20 FPS)
             executor.scheduleAtFixedRate(() -> {
                 long currentTime = System.nanoTime();
                 float deltaTime = Math.min((currentTime - lastTime[0]) / 1_000_000_000.0f, 0.1f);
+                lastTime[0] = currentTime;
 
+                // Synchronizované aktualizácie
+                synchronized (player) {
+                    playerController.update(deltaTime);
+                    gunController.update(deltaTime);
+                }
                 synchronized (enemy) {
                     enemyController.update(deltaTime);
                 }
 
-                // Trigger repaint for enemy view on EDT
-                SwingUtilities.invokeLater(mainContainer.getEnemyView()::repaint);
-            }, 0, 50, TimeUnit.MILLISECONDS);
+                // Prekreslenie na EDT
+                SwingUtilities.invokeLater(() -> {
+                    mainContainer.getPlayerView().repaint();
+                    mainContainer.getGunView().repaint();
+                    mainContainer.getEnemyView().repaint();
+                });
+            }, 0, 16, TimeUnit.MILLISECONDS);
 
-            // Shutdown executor when window closes
+            // Zatvorenie executora pri zatvorení okna
             frame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {

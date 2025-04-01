@@ -19,6 +19,5 @@ public class Enemy extends Character {
         }
     void attackPlayer(Player player) {
             player.setHealth(player.getHealth()-damage);
-
     }
 }
