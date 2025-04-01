@@ -1,6 +1,7 @@
 package Main.Game.Collectible;
 
 import Main.Game.Character.Player;
+import Main.Game.ScoreCounter;
 
 public class Coins extends Item implements Collectible {
     private int value;
@@ -11,8 +12,8 @@ public class Coins extends Item implements Collectible {
         super(x, y, name);
     }
 
-    @Override
-    public void collect(Player player) {
+@Override
+    public void collect( Player player ) {
         System.out.println("Coins collected");
     }
 

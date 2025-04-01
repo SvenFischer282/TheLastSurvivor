@@ -1,5 +1,6 @@
 package Main.Game.Character;
 
+import Main.Game.ScoreCounter;
 import Main.Game.Weapons.Weapon;
 
 import java.util.concurrent.Executors;
@@ -16,6 +17,7 @@ public class Player extends Character {
     private boolean rotation;
     private final Gun gun; // Inštancia vnorenej triedy Gun
     private static final int MAX_HEALTH = 10;
+    private final ScoreCounter scoreCounter = ScoreCounter.getInstance();
 
     /**
      * Constructs a new Player instance.
@@ -55,6 +57,9 @@ public class Player extends Character {
         else{
             this.setHealth(this.getHealth() + value);
         }
+    }
+    public void addScore(int value){
+        scoreCounter.setScore(scoreCounter.getScore() + value);
     }
 
     @Override

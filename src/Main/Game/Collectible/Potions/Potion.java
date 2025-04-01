@@ -26,6 +26,9 @@ public class Potion extends Item implements Collectible {
     public void collect(Inventory inventory) {
         inventory.addPotion(this);
     }
+    public String getDescription(){
+        return "This potion is used for brewing potions. It does not have any effects on its own ";
+    }
 
     public int getEffectStrength() {
         return effectStrength;

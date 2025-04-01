@@ -9,6 +9,7 @@ import Main.Game.Collectible.Potions.HealPotion;
 import Main.Game.Collectible.Potions.Potion;
 import Main.Game.Collectible.Potions.StrenghtPotion;
 import Main.Game.Inventory;
+import Main.Game.ScoreCounter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,17 +43,17 @@ public class MainApp {
             EnemyController enemyController = new EnemyController(zombie, player);
 
 
+
+
+            Inventory inventory = new Inventory(player);
+
             Potion potion1 = new StrenghtPotion(10,10,3);
             Potion potion2= new HealPotion(50,50,5);
-            Inventory inventory = new Inventory(player);
+
             inventory.addPotion(potion1);
             inventory.addPotion(potion2);
             inventory.usePotion(Potion.PotionType.HEAL);
             inventory.usePotion(Potion.PotionType.HEAL);
-
-
-
-
 
 
 

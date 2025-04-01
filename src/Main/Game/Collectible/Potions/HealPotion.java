@@ -14,5 +14,9 @@ public class HealPotion extends Potion implements Collectible {
         player.heal(this.getEffectStrength());
         System.out.println("Healed " + this.getEffectStrength());
     }
+    @Override
+    public String getDescription(){
+        return "This potion heals you";
+    }
 
 }
