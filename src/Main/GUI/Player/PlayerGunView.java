@@ -8,15 +8,39 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
- * Renders both the Player and its Gun.
+ * A Swing component that renders both the player character and their gun.
+ * Handles visualization of player sprites, bullets, and health information.
  */
 public class PlayerGunView extends JPanel {
+    /**
+     * The player model being visualized.
+     */
     private final Player player;
+
+    /**
+     * The gun model associated with the player.
+     */
     private final Player.Gun gun;
+
+    /**
+     * Image of the player facing right.
+     */
     private Image playerImageR;
+
+    /**
+     * Image of the player facing left.
+     */
     private Image playerImageL;
+
+    /**
+     * The diameter of bullet visualization in pixels.
+     */
     private static final int BULLET_SIZE = 10;
 
+    /**
+     * Creates a new PlayerGunView for the specified player.
+     * @param player The player to visualize
+     */
     public PlayerGunView(Player player) {
         this.player = player;
         this.gun = player.getGun();
@@ -34,6 +58,11 @@ public class PlayerGunView extends JPanel {
         }
     }
 
+    /**
+     * Creates a placeholder image when player sprites cannot be loaded.
+     * @param color The color for the placeholder
+     * @return A generated placeholder image
+     */
     private Image createPlaceholderImage(Color color) {
         BufferedImage img = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = img.createGraphics();
@@ -43,6 +72,10 @@ public class PlayerGunView extends JPanel {
         return img;
     }
 
+    /**
+     * Renders the player, gun, and debug information.
+     * @param g The Graphics context to render to
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

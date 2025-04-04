@@ -30,7 +30,7 @@ public class Player extends Character {
         this.vy = 0;
         this.speed = 500.0f; // Default speed
         this.rotation = false;
-        this.gun = new Gun(10); // Inicializácia Gun s damage 10
+        this.gun = new Gun(10);
     }
 
     /**
@@ -47,7 +47,7 @@ public class Player extends Character {
         if (changeX > (1200 - 32)) changeX = (1200 - 32);
         setPositionX(changeX);
         setPositionY(changeY);
-        gun.update(deltaTime); // Aktualizácia zbrane
+        gun.update(deltaTime);
     }
     public void heal(int value){
 
@@ -64,7 +64,6 @@ public class Player extends Character {
 
     @Override
     public void update(float deltaTime, Player player) {
-        // Nie je potrebné, ponechané prázdne
     }
 
     public void setVelocity(float vx, float vy) {
@@ -109,17 +108,25 @@ public class Player extends Character {
         private static final int SCREEN_WIDTH = 1200;
         private static final int SCREEN_HEIGHT = 722;
 
-
+        /**
+         * Constructs a new gun istance
+         * @param damage Initial damage
+         */
         public Gun(int damage) {
             super(damage);
             canShoot = true;
             bulletActive = false;
-            bulletPosX = Player.this.getX(); // Prístup k vonkajšej triede
+            bulletPosX = Player.this.getX();
             bulletPosY = Player.this.getY();
             dx = 0;
             dy = 0;
         }
 
+        /**
+         * Handles bullet shooting and reloading time
+         * @param target_x Target`s X coordinate
+         * @param target_y Target`s Y coordinate
+         */
         public void shoot(int target_x, int target_y) {
             if (canShoot && !bulletActive) {
                 canShoot = false;
@@ -130,7 +137,13 @@ public class Player extends Character {
                 scheduler.schedule(() -> canShoot = true, 1000, TimeUnit.MILLISECONDS);
             }
         }
-
+        /**
+         * Setter for bullet velocity.
+         * Only sets the velocity if the bullet is active and currently stationary.
+         *
+         * @param dx The desired horizontal velocity component.
+         * @param dy The desired vertical velocity component.
+         */
         public void setBulletVelocity(float dx, float dy) {
             if (bulletActive && this.dx == 0 && this.dy == 0) {
                 this.dx = dx;
@@ -138,6 +151,12 @@ public class Player extends Character {
             }
         }
 
+        /**
+         * Updates the bullet's position based on its velocity and the elapsed time.
+         * If the bullet moves off-screen, it is reset.
+         *
+         * @param deltaTime The time elapsed since the last update
+         */
         public void update(float deltaTime) {
             if (bulletActive) {
                 bulletPosX += dx * deltaTime;
@@ -147,10 +166,14 @@ public class Player extends Character {
                         bulletPosY < 0 || bulletPosY > SCREEN_HEIGHT ) {
                     resetBullet();
                 }
-
             }
         }
 
+        /**
+         * Resets the bullet's state to inactive.
+         * This sets the bulletActive flag to false, zeroes out its velocity,
+         * and repositions it at the player's current coordinates.
+         */
         private void resetBullet() {
             bulletActive = false;
             dx = 0;
