@@ -25,7 +25,7 @@ public class Player extends Character {
      * @param y Initial y-coordinate
      */
     public Player(int x, int y) {
-        super(2, x, y,5);
+        super(10, x, y,5);
         this.vx = 0;
         this.vy = 0;
         this.speed = 500.0f; // Default speed

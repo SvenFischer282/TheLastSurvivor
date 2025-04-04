@@ -14,7 +14,9 @@ public class Enemy extends Character {
     @Override
     public void update(float deltaTime, Player player){
         moveToPlayer(player);
+
     }
+    
     void moveToPlayer(Player player) {
         float hitboxRadius = 32;
         float dx = Math.abs( this.getX() - player.getX());

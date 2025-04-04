@@ -19,6 +19,8 @@ public class EnemyView extends JComponent {
         int x = (int) enemy.getX();
         int y = (int) enemy.getY();
         g.fillRect(x, y, 32, 32);
+        g.setColor(Color.WHITE);
+        g.drawString(String.format("Health:%d", enemy.getHealth()), 10, 40);
 
 
     }
