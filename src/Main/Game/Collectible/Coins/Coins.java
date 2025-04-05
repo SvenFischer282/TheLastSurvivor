@@ -1,7 +1,8 @@
-package Main.Game.Collectible;
+package Main.Game.Collectible.Coins;
 
 import Main.Game.Character.Player;
-import Main.Game.ScoreCounter;
+import Main.Game.Collectible.Collectible;
+import Main.Game.Collectible.Item;
 
 /**
  * Represents a collectible coin item that adds value to the player's inventory.

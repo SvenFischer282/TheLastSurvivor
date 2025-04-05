@@ -1,6 +1,7 @@
-package Main.Game.Collectible;
+package Main.Game.Collectible.Coins;
 
 import Main.Game.Character.Player;
+import Main.Game.Collectible.Collectible;
 
 /**
  * A gold coin collectible that awards points when collected by the player.
