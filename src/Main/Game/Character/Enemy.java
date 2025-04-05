@@ -51,18 +51,17 @@ public class Enemy extends Character {
      * Checks the distance to the player and initiates an attack if within range and ready.
      * @param player The Player object to check the distance against.
      */
-    void moveToPlayer(Player player) {
+    void moveToPlayer(Player player,float deltaTime) {
 
         float hitboxRadius = 32;
-        float dx = Math.abs(this.getX() - player.getX());
-        float dy = Math.abs(this.getY() - player.getY());
-        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+        float distanceX = Math.abs(this.getX() - player.getX());
+        float distanceY = Math.abs(this.getY() - player.getY());
+        float distance = (float) Math.sqrt(distanceX * distanceX + distanceY * distanceY);
         if (distance < hitboxRadius) {
             if (ableToHit) {
                 attackPlayer(player);
             }
         }
-
     }
 
     /**
