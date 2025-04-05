@@ -43,24 +43,42 @@ public class Enemy extends Character {
     @Override
     public void update(float deltaTime, Player player) {
 
-        moveToPlayer(player);
+        moveToPlayer(player,deltaTime);
 
     }
 
     /**
+     * Move the enemy towards the player
      * Checks the distance to the player and initiates an attack if within range and ready.
      * @param player The Player object to check the distance against.
+     * @param deltaTime The time elapsed from the last update
      */
-    void moveToPlayer(Player player,float deltaTime) {
-
+    void moveToPlayer(Player player, float deltaTime) {
         float hitboxRadius = 32;
-        float distanceX = Math.abs(this.getX() - player.getX());
-        float distanceY = Math.abs(this.getY() - player.getY());
-        float distance = (float) Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        if (distance < hitboxRadius) {
-            if (ableToHit) {
-                attackPlayer(player);
-            }
+        float speed = 100.0f; // Movement speed in units per second
+
+        // Calculate direction vector
+        float dx = player.getX() - this.getX();
+        float dy = player.getY() - this.getY();
+
+        // Normalize the direction vector (convert to unit vector)
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+        if (distance > 0) {
+            dx /= distance;
+            dy /= distance;
+        }
+
+        // Move toward player
+        this.setPositionX(this.getX() + (dx * speed * deltaTime));
+        this.setPositionY(this.getY() + (dy * speed * deltaTime));
+
+        // Check collision after movement
+        float newDistanceX = Math.abs(this.getX() - player.getX());
+        float newDistanceY = Math.abs(this.getY() - player.getY());
+        float newDistance = (float) Math.sqrt(newDistanceX * newDistanceX + newDistanceY * newDistanceY);
+
+        if (newDistance < hitboxRadius && ableToHit) {
+            attackPlayer(player);
         }
     }
 
