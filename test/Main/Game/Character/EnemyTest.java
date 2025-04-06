@@ -85,7 +85,11 @@ class EnemyTest {
         assertNotEquals(initialX, enemy.getX());
         assertNotEquals(initialY, enemy.getY());
     }
-
+    @Test
+    void testPlayerAttack(){
+        enemy.moveToPlayer(player, 1f);
+        enemy.attackPlayer(player);
+    }
 
 
 }
