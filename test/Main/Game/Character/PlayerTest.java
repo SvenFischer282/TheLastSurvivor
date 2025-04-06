@@ -75,7 +75,7 @@ public class PlayerTest {
     @Test
     public void testGunInitialization() {
         Player.Gun gun = player.getGun();
-        assertEquals(10, gun.getDamage(), "Gun damage should be 10");
+        assertEquals(5, gun.getDamage(), "Gun damage should be 10");
         assertTrue(gun.canShoot(), "Gun should be able to shoot");
         assertFalse(gun.isBulletActive(), "Bullet should not be active");
         assertEquals(player.getX(), gun.getBulletPosX(), 0.001, "Bullet X position should match Player X");

@@ -30,7 +30,7 @@ public class Player extends Character {
         this.vy = 0;
         this.speed = 500.0f; // Default speed
         this.rotation = false;
-        this.gun = new Gun(10);
+        this.gun = new Gun(this.getDamage());
     }
 
     /**
