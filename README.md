@@ -40,7 +40,7 @@ Hra *Last Survivor* je akčná hra, kde hráč ovláda postavu pohybujúcu sa po
    - Trieda `Inventory` kontroluje prístup k predmetom.
 
 ### 3. Polymorfizmus (Polymorphism)
-- **Prepísanie metód**:
+- **Prekonávanie metód**:
    - `Potion.use()`: Rôzne implementácie v `HealPotion` a `StrengthPotion`.
    - `Collectible.collect()`: Odlišné správanie pre `Potion` a `Coins`.
 - **Runtime method dispatch**:
