@@ -17,6 +17,7 @@ public class Enemy extends Character {
 
     /** Flag indicating if the enemy is currently capable of attacking. */
     boolean ableToHit;
+    boolean canBeHitByBullet ;
 
     /** Scheduler service to handle the attack cooldown timing. */
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -33,7 +34,18 @@ public class Enemy extends Character {
         super(health, positionX, positionY, damage);
         this.speed = 500f;
         this.ableToHit = true;
+        this.canBeHitByBullet = true;
     }
+    public void takeDamage(int damage){
+        if (this.getHealth() - damage > 0){
+            this.setHealth(this.getHealth()-damage);
+        }else {
+            this.setHealth(0);
+            System.out.println("enemy died");
+
+        }
+    }
+
 
     /**
      * Updates the enemy's state, primarily checking for player proximity to attack.
@@ -44,6 +56,7 @@ public class Enemy extends Character {
     public void update(float deltaTime, Player player) {
 
         moveToPlayer(player,deltaTime);
+        hitByBullet(player);
 
     }
 
@@ -98,8 +111,29 @@ public class Enemy extends Character {
         scheduler.schedule(() -> {
             ableToHit = true;
             System.out.println("Enemy attack ready again.");
-        }, 5, TimeUnit.SECONDS);
+        }, 2, TimeUnit.SECONDS);
     }
+    void hitByBullet(Player player) {
+        if (!canBeHitByBullet) return;  // prevent multiple hits
+
+        float bulletX = player.getGun().getBulletPosX();
+        float bulletY = player.getGun().getBulletPosY();
+
+        if (bulletX > this.getX() - 16 && bulletX < this.getX() + 16 &&
+                bulletY > this.getY() - 16 && bulletY < this.getY() + 16) {
+
+            this.takeDamage(player.getDamage());
+            player.getGun().resetBullet();
+            canBeHitByBullet = false;
+
+            // Allow the enemy to be hit by the next bullet after a short delay
+            scheduler.schedule(() -> {
+                canBeHitByBullet = true;
+            }, 300, TimeUnit.MILLISECONDS); // adjust delay as needed
+        }
+    }
+
+
 
     /**
      * Function to shut down the scheduler when the enemy is killed

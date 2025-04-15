@@ -25,7 +25,7 @@ public class Player extends Character {
      * @param y Initial y-coordinate
      */
     public Player(int x, int y) {
-        super(10, x, y,5);
+        super(10, x, y,2);
         this.vx = 0;
         this.vy = 0;
         this.speed = 500.0f; // Default speed
@@ -174,7 +174,7 @@ public class Player extends Character {
          * This sets the bulletActive flag to false, zeroes out its velocity,
          * and repositions it at the player's current coordinates.
          */
-        private void resetBullet() {
+        public void resetBullet() {
             bulletActive = false;
             dx = 0;
             dy = 0;
