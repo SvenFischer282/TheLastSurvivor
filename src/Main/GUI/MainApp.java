@@ -1,21 +1,15 @@
 package Main.GUI;
 
-import Main.GUI.Enemy.EnemyController;
+import Main.GUI.Enemy.EnemiesController;
 import Main.GUI.Player.PlayerGunController;
 import Main.Game.Character.Enemy;
 import Main.Game.Character.EnemyFactory.BasicEnemyFactory;
 import Main.Game.Character.EnemyFactory.EnemyFactory;
 import Main.Game.Character.EnemyFactory.EnemySpawner;
 import Main.Game.Character.Player;
-import Main.Game.Character.Zombie;
-import Main.Game.Collectible.Potions.HealPotion;
-import Main.Game.Collectible.Potions.Potion;
-import Main.Game.Collectible.Potions.StrengthPotion;
-import Main.Game.Inventory;
-import Main.Game.ScoreCounter;
 
 import javax.swing.*;
-import java.awt.*;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,33 +19,26 @@ import java.util.concurrent.TimeUnit;
  * Sets up all game components, controllers, and the game loop.
  */
 public class MainApp {
-    /**
-     * The main entry point for the application.
-     * Initializes all game components and starts the game loop.
-     * @param args Command line arguments (unused)
-     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             // Initialize game entities
             Player player = new Player(400, 300);
-            Enemy enemy = new Enemy(10, 100, 100, 2);
-            Zombie zombie = new Zombie(10, 200, 200, 2);
             EnemyFactory basicEnemyFactory = new BasicEnemyFactory();
-            EnemySpawner enemySpawner = new EnemySpawner(basicEnemyFactory);
-            enemySpawner.spawnEnemies(3);
+            EnemySpawner enemySpawner = new EnemySpawner();
 
-            for (Enemy e : enemySpawner.getEnemies()){
-                System.out.println(e.toString());
-            }
+            // Spawn multiple enemies
+            enemySpawner.spawnBasicEnemies(3);
+            List<Enemy> enemyList = enemySpawner.getEnemies();
 
-
-            // Create main container
-            MainContainer mainContainer = new MainContainer(player, zombie);
+            // Set player position
             player.setPositionX(600);
             player.setPositionY(500);
 
-            // Set up main window
-            JFrame frame = new JFrame("Player Movement Demo");
+            // Create main container with multiple enemies
+            MainContainer mainContainer = new MainContainer(player, enemyList);
+
+            // Create the main window
+            JFrame frame = new JFrame("The Last Survivor");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setContentPane(mainContainer);
             frame.setSize(1200, 750);
@@ -59,21 +46,13 @@ public class MainApp {
             frame.setVisible(true);
 
             // Set up player controls
-            PlayerGunController PlayerController = new PlayerGunController(player);
-            mainContainer.getPlayerGunView().addKeyListener(PlayerController);
-            mainContainer.getPlayerGunView().addMouseListener(PlayerController);
+            PlayerGunController playerController = new PlayerGunController(player);
+            mainContainer.getPlayerGunView().addKeyListener(playerController);
+            mainContainer.getPlayerGunView().addMouseListener(playerController);
             mainContainer.getPlayerGunView().requestFocusInWindow();
 
-            // Set up enemy controller
-            EnemyController enemyController = new EnemyController(zombie, player);
-
-            // Initialize inventory with test potions
-            Inventory inventory = new Inventory(player);
-            Potion potion1 = new StrengthPotion(10,10,3);
-            Potion potion2= new HealPotion(50,50,5);
-            inventory.addPotion(potion1);
-            inventory.addPotion(potion2);
-            inventory.showInventory();
+            // Set up enemies controller
+            EnemiesController enemiesController = new EnemiesController(enemyList, player);
 
             // Set up game loop
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -84,26 +63,28 @@ public class MainApp {
                 float deltaTime = Math.min((currentTime - lastTime[0]) / 1_000_000_000.0f, 0.1f);
                 lastTime[0] = currentTime;
 
-                // Update game state
+                // Update player and enemies
                 synchronized (player) {
-                    PlayerController.update(deltaTime);
-                }
-                synchronized (enemy) {
-                    enemyController.update(deltaTime);
+                    playerController.update(deltaTime);
+                    enemiesController.updateAll(deltaTime);
                 }
 
-                // Update display
+                // Repaint views
                 SwingUtilities.invokeLater(() -> {
                     mainContainer.getPlayerGunView().repaint();
-                    mainContainer.getEnemyView().repaint();
+                    mainContainer.getEnemiesView().repaint();
                 });
             }, 0, 16, TimeUnit.MILLISECONDS);
 
-            // Clean up on window close
+            // Shut down executor when window closes
             frame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                     executor.shutdown();
+                    // Also shutdown any scheduler in enemies (optional cleanup)
+                    for (Enemy enemy : enemyList) {
+                        enemy.cleanup();
+                    }
                 }
             });
         });
