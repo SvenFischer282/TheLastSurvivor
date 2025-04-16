@@ -1,6 +1,7 @@
 package Main.Game.Character.EnemyFactory;
 
 import Main.Game.Character.Enemy;
+import Main.Utils.RandomBorderCoordinates;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,21 +9,32 @@ import java.util.List;
 public class EnemySpawner {
     private final List<Enemy> enemies = new ArrayList<>();
     private final BasicEnemyFactory basicEnemyFactory;
+    private final FastZombieFactory fastZombieFactory;
 
     public EnemySpawner() {
         this.basicEnemyFactory = new BasicEnemyFactory();
+        this.fastZombieFactory = new FastZombieFactory();
     }
 
     public void spawnBasicEnemies(int amount) {
         for (int i = 0; i < amount; i++) {
-            // Spread them out horizontally, and vertically by a bit
-            int x = 200 + (i * 100);
-            int y = 200 + (i * 50);
+            int[] coordinates = RandomBorderCoordinates.getRandomBorderCoordinate();
+            int x = coordinates[0];
+            int y = coordinates[1];
             Enemy enemy = basicEnemyFactory.createEnemy(x, y);
             enemies.add(enemy);
         }
     }
 
+    public void spawnFastZombies(int amount) {
+        for (int i = 0; i < amount; i++) {
+            int[] coordinates = RandomBorderCoordinates.getRandomBorderCoordinate();
+            int x = coordinates[0];
+            int y = coordinates[1];
+            Enemy enemy = fastZombieFactory.createEnemy(x, y);
+            enemies.add(enemy);
+        }
+    }
     public List<Enemy> getEnemies() {
         return enemies;
     }

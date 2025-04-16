@@ -28,6 +28,7 @@ public class MainApp {
 
             // Spawn multiple enemies
             enemySpawner.spawnBasicEnemies(3);
+            enemySpawner.spawnFastZombies(2);
             List<Enemy> enemyList = enemySpawner.getEnemies();
 
             // Set player position

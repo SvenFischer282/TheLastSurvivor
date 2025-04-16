@@ -5,16 +5,18 @@ import Main.Game.Character.Zombie;
 
 public class FastZombieFactory implements EnemyFactory {
     float speed;
-    int damage;
-    int health;
+    static int damage;
+    static int health;
     FastZombieFactory(){
-        this.speed = 800f;
+        this.speed = 150f;
         this.damage = 2;
-        this.health = 4;
+        this.health = 2;
     }
 
-    @Override
     public Enemy createEnemy(int x, int y) {
-        return new Zombie(health,x,y,damage);
+        Zombie zombie =  new Zombie(health,x,y,damage,speed);
+        return zombie;
+
+
     }
 }

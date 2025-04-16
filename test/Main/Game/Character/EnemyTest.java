@@ -34,8 +34,8 @@ class EnemyTest {
         assertEquals(0f, enemy.getX());
         assertEquals(0f, enemy.getY());
         assertEquals(20, enemy.getDamage());
-        assertEquals(500f, enemy.speed);
-        assertTrue(enemy.ableToHit);
+        assertEquals(500f, enemy.getSpeed());
+        assertTrue(enemy.isAbleToHit());
     }
 
     @Test
@@ -72,7 +72,7 @@ class EnemyTest {
         enemy.moveToPlayer(player, 0.1f);
 
         assertEquals(initialPlayerHealth, player.getHealth());
-        assertTrue(enemy.ableToHit);
+        assertTrue(enemy.isAbleToHit());
     }
 
     @Test

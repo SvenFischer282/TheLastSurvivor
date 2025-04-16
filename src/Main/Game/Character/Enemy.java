@@ -1,5 +1,6 @@
 package Main.Game.Character;
 
+import java.awt.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -13,11 +14,12 @@ import java.util.concurrent.TimeUnit;
 public class Enemy extends Character {
 
     /** The movement speed of the enemy (currently unused ). */
-    float speed;
+   private float speed;
 
     /** Flag indicating if the enemy is currently capable of attacking. */
-    boolean ableToHit;
-    boolean canBeHitByBullet ;
+   private boolean ableToHit;
+   private boolean canBeHitByBullet ;
+   private Color color;
 
     /** Scheduler service to handle the attack cooldown timing. */
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -30,11 +32,12 @@ public class Enemy extends Character {
      * @param positionY  The initial Y coordinate of the enemy.
      * @param damage     The amount of damage the enemy inflicts per attack.
      */
-    public Enemy(int health, int positionX, int positionY, int damage) {
+    public Enemy(int health, int positionX, int positionY, int damage,float speed) {
         super(health, positionX, positionY, damage);
-        this.speed = 500f;
+        this.speed = speed;
         this.ableToHit = true;
         this.canBeHitByBullet = true;
+        this.color = Color.BLUE;
     }
     public void takeDamage(int damage){
         if (this.getHealth() - damage > 0){
@@ -68,7 +71,7 @@ public class Enemy extends Character {
      */
     void moveToPlayer(Player player, float deltaTime) {
         float hitboxRadius = 32;
-        float speed = 100.0f; // Movement speed in units per second
+         // Movement speed in units per second
 
         // Calculate direction vector
         float dx = player.getX() - this.getX();
@@ -82,8 +85,8 @@ public class Enemy extends Character {
         }
 
         // Move toward player
-        this.setPositionX(this.getX() + (dx * speed * deltaTime));
-        this.setPositionY(this.getY() + (dy * speed * deltaTime));
+        this.setPositionX(this.getX() + (dx * this.speed * deltaTime));
+        this.setPositionY(this.getY() + (dy * this.speed * deltaTime));
 
         // Check collision after movement
         float newDistanceX = Math.abs(this.getX() - player.getX());
@@ -140,6 +143,30 @@ public class Enemy extends Character {
      */
      public void cleanup() {
          scheduler.shutdown();
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public boolean isAbleToHit() {
+        return ableToHit;
+    }
+
+    public void setAbleToHit(boolean ableToHit) {
+        this.ableToHit = ableToHit;
     }
 
     @Override

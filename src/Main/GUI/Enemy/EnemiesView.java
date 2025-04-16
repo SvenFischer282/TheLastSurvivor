@@ -25,7 +25,7 @@ public class EnemiesView extends JComponent {
 
             int x = (int) enemy.getX();
             int y = (int) enemy.getY();
-            g.setColor(Color.GREEN);
+            g.setColor(enemy.getColor());
             g.fillRect(x - 16, y - 16, 32, 32);
             g.setColor(Color.RED);
             g.drawOval(x - 32, y - 32, 64, 64);
