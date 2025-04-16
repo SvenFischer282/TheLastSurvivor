@@ -5,7 +5,7 @@ import Main.Game.Character.Enemy;
 public class BasicEnemyFactory implements EnemyFactory{
     private int health;
     private int damage;
-    BasicEnemyFactory(){
+    public BasicEnemyFactory(){
         this.health = 4;
         this.damage = 1;
     }

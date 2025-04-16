@@ -11,13 +11,16 @@ public class EnemySpawner {
     private List<Enemy> enemies= new ArrayList<>();
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private EnemyFactory enemyFactory;
-    EnemySpawner(EnemyFactory enemyFactory){
+    public EnemySpawner(EnemyFactory enemyFactory){
         this.enemyFactory = enemyFactory;
     }
-    void spawnEnemies(){
-        Enemy newEnemy = enemyFactory.createEnemy(100,100);
-        enemies.add(newEnemy);
-    }
+    public void spawnEnemies(int ammount){
+        for (int i = 0; i < ammount; i++) {
+            Enemy newEnemy = enemyFactory.createEnemy(100,100);
+            enemies.add(newEnemy);
+
+        }
+         }
 
     // Get all spawned enemies
     public List<Enemy> getEnemies() {

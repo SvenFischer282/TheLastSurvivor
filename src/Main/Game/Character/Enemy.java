@@ -141,4 +141,13 @@ public class Enemy extends Character {
      public void cleanup() {
          scheduler.shutdown();
     }
+
+    @Override
+    public String toString() {
+        return "Enemy{" +
+                "speed=" + speed +
+                ", ableToHit=" + ableToHit +
+                ", canBeHitByBullet=" + canBeHitByBullet +
+                '}';
+    }
 }

@@ -3,6 +3,9 @@ package Main.GUI;
 import Main.GUI.Enemy.EnemyController;
 import Main.GUI.Player.PlayerGunController;
 import Main.Game.Character.Enemy;
+import Main.Game.Character.EnemyFactory.BasicEnemyFactory;
+import Main.Game.Character.EnemyFactory.EnemyFactory;
+import Main.Game.Character.EnemyFactory.EnemySpawner;
 import Main.Game.Character.Player;
 import Main.Game.Character.Zombie;
 import Main.Game.Collectible.Potions.HealPotion;
@@ -33,6 +36,14 @@ public class MainApp {
             Player player = new Player(400, 300);
             Enemy enemy = new Enemy(10, 100, 100, 2);
             Zombie zombie = new Zombie(10, 200, 200, 2);
+            EnemyFactory basicEnemyFactory = new BasicEnemyFactory();
+            EnemySpawner enemySpawner = new EnemySpawner(basicEnemyFactory);
+            enemySpawner.spawnEnemies(3);
+
+            for (Enemy e : enemySpawner.getEnemies()){
+                System.out.println(e.toString());
+            }
+
 
             // Create main container
             MainContainer mainContainer = new MainContainer(player, zombie);
