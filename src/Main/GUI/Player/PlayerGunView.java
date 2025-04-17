@@ -22,7 +22,10 @@ public class PlayerGunView extends JPanel {
      * The gun model associated with the player.
      */
     private final Player.Gun gun;
-
+    /**
+     * The sword model associated with the player
+     */
+private final Player.Sword sword;
     /**
      * Image of the player facing right.
      */
@@ -46,6 +49,7 @@ public class PlayerGunView extends JPanel {
     public PlayerGunView(Player player) {
         this.player = player;
         this.gun = player.getGun();
+        this.sword = player.getSword();
         setOpaque(true);
         setBackground(Color.BLACK);
 
@@ -96,7 +100,46 @@ public class PlayerGunView extends JPanel {
                     (int) gun.getBulletPosY() - BULLET_SIZE / 2,
                     BULLET_SIZE, BULLET_SIZE);
         }
+        if (sword.isSwinging()) {
+            g.setColor(Color.GRAY); // Farba meča
+            int swordLength = 50;
+            int swordWidth = 5;
+            int offset = 10; // Vzdialenosť od stredu postavy
+            int centerX = (int) player.getX() + 32; // Stred postavy X
+            int centerY = (int) player.getY()+32 ; // Stred postavy Y
+            int x, y, width, height;
 
+            switch (player.getDirection()) {
+                case RIGHT:
+                    x = centerX + offset;
+                    y = centerY - swordWidth / 2;
+                    width = swordLength;
+                    height = swordWidth;
+                    break;
+                case LEFT:
+                    x = centerX - offset - 70;
+                    y = centerY - swordWidth / 2;
+                    width = swordLength;
+                    height = swordWidth;
+                    break;
+                case UP:
+                    x = centerX + offset; // Pravá strana
+                    y = centerY - offset - swordLength;
+                    width = swordWidth;
+                    height = swordLength;
+                    break;
+                case DOWN:
+                    x = centerX + offset; // Pravá strana
+                    y = centerY + offset;
+                    width = swordWidth;
+                    height = swordLength;
+                    break;
+                default:
+                    return; // Bezpečnostná kontrola
+            }
+
+            g.fillRect(x, y, width, height);
+        }
         // Debug info
         g.setColor(Color.WHITE);
         g.drawString(String.format("Health:%d", player.getHealth()), 10, 20);

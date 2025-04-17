@@ -243,9 +243,6 @@ public class Player extends Character {
         public void swing() {
             if (!isSwinging) {
                 isSwinging = true;
-
-
-
                 scheduler.schedule(() -> isSwinging = false, 300, TimeUnit.MILLISECONDS);
             }
         }

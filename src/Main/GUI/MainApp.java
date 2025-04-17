@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 public class MainApp {
     private static final Logger logger = LoggerFactory.getLogger(MainApp.class);
     public static void main(String[] args) {
+
+
         // Show loading screen
         JFrame loadingFrame = new JFrame("Loading...");
         loadingFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -45,7 +47,7 @@ public class MainApp {
         // Simulate loading (e.g., 3 seconds)
         new Thread(() -> {
             try {
-                Thread.sleep(3000); // Adjust duration as needed
+                Thread.sleep(500); // Adjust duration as needed
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
