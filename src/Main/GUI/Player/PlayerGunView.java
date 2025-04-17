@@ -1,6 +1,7 @@
 package Main.GUI.Player;
 
 import Main.Game.Character.Player;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -39,6 +40,7 @@ public class PlayerGunView extends JPanel {
 
     /**
      * Creates a new PlayerGunView for the specified player.
+     *
      * @param player The player to visualize
      */
     public PlayerGunView(Player player) {
@@ -60,6 +62,7 @@ public class PlayerGunView extends JPanel {
 
     /**
      * Creates a placeholder image when player sprites cannot be loaded.
+     *
      * @param color The color for the placeholder
      * @return A generated placeholder image
      */

@@ -81,13 +81,20 @@ public class PlayerGunController implements KeyListener, MouseListener {
      */
     private void updateVelocity() {
         float vx = 0, vy = 0;
-        if (up) vy -= playerSpeed;
-        if (down) vy += playerSpeed;
+        if (up){
+            player.setDirection(Player.Direction.UP);
+            vy -= playerSpeed;}
+        if (down) {
+            player.setDirection(Player.Direction.DOWN);
+            vy += playerSpeed;
+        }
         if (left) {
+            player.setDirection(Player.Direction.LEFT);
             player.setRotation(true);
             vx -= playerSpeed;
         }
         if (right) {
+            player.setDirection(Player.Direction.RIGHT);
             player.setRotation(false);
             vx += playerSpeed;
         }

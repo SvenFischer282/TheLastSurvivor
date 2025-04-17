@@ -1,9 +1,14 @@
 package Main.Game.Character;
 
+import Main.GUI.MainApp;
+import org.slf4j.Logger;
+
 import java.awt.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents an enemy character in the game.
@@ -12,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * Extends the base {@link Character} class.
  */
 public class Enemy extends Character {
-
+    private final static Logger logger = LoggerFactory.getLogger(MainApp.class);
     /** The movement speed of the enemy (currently unused ). */
    private float speed;
 
@@ -44,7 +49,7 @@ public class Enemy extends Character {
             this.setHealth(this.getHealth()-damage);
         }else {
             this.setHealth(0);
-            System.out.println("enemy died");
+            logger.info("Ennemy died");
 
         }
     }
@@ -106,14 +111,14 @@ public class Enemy extends Character {
      * @param player The Player object to attack.
      */
     void attackPlayer(Player player) {
-        System.out.println("Player was attacked by Enemy!");
+        logger.info("Player was hit by enemy");
         player.takeDamage(this.getDamage());
         ableToHit = false;
 
 
         scheduler.schedule(() -> {
             ableToHit = true;
-            System.out.println("Enemy attack ready again.");
+
         }, 2, TimeUnit.SECONDS);
     }
     void hitByBullet(Player player) {

@@ -9,85 +9,119 @@ import Main.Game.Character.EnemyFactory.EnemySpawner;
 import Main.Game.Character.Player;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * The main application class that initializes and runs the game.
  * Sets up all game components, controllers, and the game loop.
  */
 public class MainApp {
+    private static final Logger logger = LoggerFactory.getLogger(MainApp.class);
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            // Initialize game entities
-            Player player = new Player(400, 300);
-            EnemyFactory basicEnemyFactory = new BasicEnemyFactory();
-            EnemySpawner enemySpawner = new EnemySpawner();
+        // Show loading screen
+        JFrame loadingFrame = new JFrame("Loading...");
+        loadingFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        loadingFrame.setSize(400, 200);
+        loadingFrame.setLocationRelativeTo(null);
+        loadingFrame.setUndecorated(true); // Optional: Remove window borders
 
-            // Spawn multiple enemies
-            enemySpawner.spawnBasicEnemies(3);
-            enemySpawner.spawnFastZombies(2);
-            List<Enemy> enemyList = enemySpawner.getEnemies();
+        JPanel loadingPanel = new JPanel(new BorderLayout());
+        JLabel loadingLabel = new JLabel("Loading The Last Survivor...", SwingConstants.CENTER);
+        loadingLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true); // Indeterminate animation
+        loadingPanel.add(loadingLabel, BorderLayout.CENTER);
+        loadingPanel.add(progressBar, BorderLayout.SOUTH);
+        loadingFrame.add(loadingPanel);
 
-            // Set player position
-            player.setPositionX(600);
-            player.setPositionY(500);
+        // Display loading screen
+        SwingUtilities.invokeLater(() -> loadingFrame.setVisible(true));
 
-            // Create main container with multiple enemies
-            MainContainer mainContainer = new MainContainer(player, enemyList);
+        // Simulate loading (e.g., 3 seconds)
+        new Thread(() -> {
+            try {
+                Thread.sleep(3000); // Adjust duration as needed
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-            // Create the main window
-            JFrame frame = new JFrame("The Last Survivor");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setContentPane(mainContainer);
-            frame.setSize(1200, 750);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
+            // Close loading screen and start game
+            SwingUtilities.invokeLater(() -> {
+                loadingFrame.dispose(); // Close loading screen
 
-            // Set up player controls
-            PlayerGunController playerController = new PlayerGunController(player);
-            mainContainer.getPlayerGunView().addKeyListener(playerController);
-            mainContainer.getPlayerGunView().addMouseListener(playerController);
-            mainContainer.getPlayerGunView().requestFocusInWindow();
+                // Initialize game entities
+                Player player = new Player(400, 300);
+                EnemyFactory basicEnemyFactory = new BasicEnemyFactory();
+                EnemySpawner enemySpawner = new EnemySpawner();
 
-            // Set up enemies controller
-            EnemiesController enemiesController = new EnemiesController(enemyList, player);
+                // Spawn multiple enemies
+                enemySpawner.spawnBasicEnemies(3);
+                enemySpawner.spawnFastZombies(2);
+                List<Enemy> enemyList = enemySpawner.getEnemies();
 
-            // Set up game loop
-            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-            final long[] lastTime = {System.nanoTime()};
+                // Set player position
+                player.setPositionX(600);
+                player.setPositionY(500);
 
-            executor.scheduleAtFixedRate(() -> {
-                long currentTime = System.nanoTime();
-                float deltaTime = Math.min((currentTime - lastTime[0]) / 1_000_000_000.0f, 0.1f);
-                lastTime[0] = currentTime;
+                // Create main container with multiple enemies
+                MainContainer mainContainer = new MainContainer(player, enemyList);
 
-                // Update player and enemies
-                synchronized (player) {
-                    playerController.update(deltaTime);
-                    enemiesController.updateAll(deltaTime);
-                }
+                // Create the main window
+                JFrame frame = new JFrame("The Last Survivor");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setContentPane(mainContainer);
+                frame.setSize(1200, 750);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
 
-                // Repaint views
-                SwingUtilities.invokeLater(() -> {
-                    mainContainer.getPlayerGunView().repaint();
-                    mainContainer.getEnemiesView().repaint();
-                });
-            }, 0, 16, TimeUnit.MILLISECONDS);
+                // Set up player controls
+                PlayerGunController playerController = new PlayerGunController(player);
+                mainContainer.getPlayerGunView().addKeyListener(playerController);
+                mainContainer.getPlayerGunView().addMouseListener(playerController);
+                mainContainer.getPlayerGunView().requestFocusInWindow();
 
-            // Shut down executor when window closes
-            frame.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                    executor.shutdown();
-                    // Also shutdown any scheduler in enemies (optional cleanup)
-                    for (Enemy enemy : enemyList) {
-                        enemy.cleanup();
+                // Set up enemies controller
+                EnemiesController enemiesController = new EnemiesController(enemyList, player);
+
+                // Set up game loop
+                ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+                final long[] lastTime = {System.nanoTime()};
+
+                executor.scheduleAtFixedRate(() -> {
+                    long currentTime = System.nanoTime();
+                    float deltaTime = Math.min((currentTime - lastTime[0]) / 1_000_000_000.0f, 0.1f);
+                    lastTime[0] = currentTime;
+
+                    // Update player and enemies
+                    synchronized (player) {
+                        playerController.update(deltaTime);
+                        enemiesController.updateAll(deltaTime);
                     }
-                }
+
+                    // Repaint views
+                    SwingUtilities.invokeLater(() -> {
+                        mainContainer.getPlayerGunView().repaint();
+                        mainContainer.getEnemiesView().repaint();
+                    });
+                }, 0, 16, TimeUnit.MILLISECONDS);
+
+                // Shut down executor when window closes
+                frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                        executor.shutdown();
+                        // Also shutdown any scheduler in enemies (optional cleanup)
+                        for (Enemy enemy : enemyList) {
+                            enemy.cleanup();
+                        }
+                    }
+                });
             });
-        });
+        }).start();
     }
 }
