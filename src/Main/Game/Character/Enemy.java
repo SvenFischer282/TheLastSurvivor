@@ -24,6 +24,7 @@ public class Enemy extends Character {
     /** Flag indicating if the enemy is currently capable of attacking. */
    private boolean ableToHit;
    private boolean canBeHitByBullet ;
+   private boolean canBeHitBySword;
    private Color color;
 
     /** Scheduler service to handle the attack cooldown timing. */
@@ -42,6 +43,7 @@ public class Enemy extends Character {
         this.speed = speed;
         this.ableToHit = true;
         this.canBeHitByBullet = true;
+        this.canBeHitBySword = true;
         this.color = Color.BLUE;
     }
     public void takeDamage(int damage){
@@ -65,6 +67,7 @@ public class Enemy extends Character {
 
         moveToPlayer(player,deltaTime);
         hitByBullet(player);
+        hitBySword(player);
 
     }
 
@@ -141,7 +144,56 @@ public class Enemy extends Character {
         }
     }
 
+    void hitBySword(Player player) {
+        if (!canBeHitBySword || !player.getSword().isSwinging()) return; // Prevent multiple hits and check if sword is swinging
 
+        int centerX = (int) player.getX() + 32; // Player center X
+        int centerY = (int) player.getY() + 32; // Player center Y
+        int hitboxX, hitboxY, hitboxWidth, hitboxHeight;
+
+        switch (player.getDirection()) {
+            case RIGHT:
+                hitboxX = centerX; // Start at player’s center
+                hitboxY = centerY - 32; // Centered vertically
+                hitboxWidth = 64; // Extend right
+                hitboxHeight = 64; // Wide enough to cover player height
+                break;
+            case LEFT:
+                hitboxX = centerX - 64; // Extend left
+                hitboxY = centerY - 32; // Centered vertically
+                hitboxWidth = 64; // Wide hitbox
+                hitboxHeight = 64; // Wide enough to cover player height
+                break;
+            case UP:
+                hitboxX = centerX - 16; // Centered horizontally
+                hitboxY = centerY - 96; // Extend upward
+                hitboxWidth = 32; // Narrow to match player width
+                hitboxHeight = 96; // Tall hitbox
+                break;
+            case DOWN:
+                hitboxX = centerX - 16; // Centered horizontally
+                hitboxY = centerY; // Extend downward
+                hitboxWidth = 32; // Narrow to match player width
+                hitboxHeight = 96; // Tall hitbox
+                break;
+            default:
+                return;
+        }
+
+        // Check if enemy is within the sword's hitbox
+        if (this.getX() + 16 > hitboxX && this.getX() - 16 < hitboxX + hitboxWidth &&
+                this.getY() + 16 > hitboxY && this.getY() - 16 < hitboxY + hitboxHeight) {
+
+            this.takeDamage(player.getSword().getDamage());
+            logger.info(this.toString()+" hit by sword");
+            canBeHitBySword = false;
+
+            // Allow the enemy to be hit by the next sword swing
+            scheduler.schedule(() -> {
+                canBeHitBySword = true;
+            }, 300, TimeUnit.MILLISECONDS);
+        }
+    }
 
     /**
      * Function to shut down the scheduler when the enemy is killed

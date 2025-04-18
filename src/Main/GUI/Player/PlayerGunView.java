@@ -100,42 +100,38 @@ private final Player.Sword sword;
                     (int) gun.getBulletPosY() - BULLET_SIZE / 2,
                     BULLET_SIZE, BULLET_SIZE);
         }
+        // Render Sword
         if (sword.isSwinging()) {
-            g.setColor(Color.GRAY); // Farba meča
-            int swordLength = 50;
-            int swordWidth = 5;
-            int offset = 10; // Vzdialenosť od stredu postavy
-            int centerX = (int) player.getX() + 32; // Stred postavy X
-            int centerY = (int) player.getY()+32 ; // Stred postavy Y
+            g.setColor(Color.GRAY);
             int x, y, width, height;
 
             switch (player.getDirection()) {
                 case RIGHT:
-                    x = centerX + offset;
-                    y = centerY - swordWidth / 2;
-                    width = swordLength;
-                    height = swordWidth;
+                    x = (int) player.getX() + 42;
+                    y = (int) player.getY() + 29;
+                    width = 50;
+                    height = 5;
                     break;
                 case LEFT:
-                    x = centerX - offset - 70;
-                    y = centerY - swordWidth / 2;
-                    width = swordLength;
-                    height = swordWidth;
+                    x = (int) player.getX() - 43;
+                    y = (int) player.getY() + 29;
+                    width = 50;
+                    height = 5;
                     break;
                 case UP:
-                    x = centerX + offset; // Pravá strana
-                    y = centerY - offset - swordLength;
-                    width = swordWidth;
-                    height = swordLength;
+                    x = (int) player.getX() + 42;
+                    y = (int) player.getY() - 25;
+                    width = 5;
+                    height = 50;
                     break;
                 case DOWN:
-                    x = centerX + offset; // Pravá strana
-                    y = centerY + offset;
-                    width = swordWidth;
-                    height = swordLength;
+                    x = (int) player.getX() + 42;
+                    y = (int) player.getY() + 42;
+                    width = 5;
+                    height = 50;
                     break;
                 default:
-                    return; // Bezpečnostná kontrola
+                    return;
             }
 
             g.fillRect(x, y, width, height);
