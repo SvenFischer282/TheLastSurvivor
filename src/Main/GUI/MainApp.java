@@ -3,8 +3,6 @@ package Main.GUI;
 import Main.GUI.Enemy.EnemiesController;
 import Main.GUI.Player.PlayerGunController;
 import Main.Game.Character.Enemy;
-import Main.Game.Character.EnemyFactory.BasicEnemyFactory;
-import Main.Game.Character.EnemyFactory.EnemyFactory;
 import Main.Game.Character.EnemyFactory.EnemySpawner;
 import Main.Game.Character.Player;
 
@@ -17,8 +15,10 @@ import java.util.concurrent.TimeUnit;
 
 import Main.Game.Collectible.Potions.HealPotion;
 import Main.Game.Collectible.Potions.Potion;
+import Main.Game.Collectible.Potions.PotionFactory.PotionSpawner;
 import Main.Game.Collectible.Potions.StrengthPotion;
 import Main.Game.Inventory;
+import Main.Game.Collectible.Potions.PotionCollisionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,33 +30,35 @@ public class MainApp {
     private static final Logger logger = LoggerFactory.getLogger(MainApp.class);
 
     public static void main(String[] args) {
-
-
-        // Initialize game entities
+        // Initialize player and inventory
         Player player = new Player(400, 300);
         Inventory inventory = new Inventory(player);
 
-        EnemyFactory basicEnemyFactory = new BasicEnemyFactory();
+        // Spawn enemies and potions
         EnemySpawner enemySpawner = new EnemySpawner();
+        PotionSpawner potionSpawner = new PotionSpawner();
 
-        // Spawn multiple enemies
+        potionSpawner.spawnStrengthPotion(1);
+        potionSpawner.spawnHealPotion(1);
+        List<Potion> potionList = potionSpawner.getPotions();
+
         enemySpawner.spawnBasicEnemies(3);
         enemySpawner.spawnFastZombies(2);
         List<Enemy> enemyList = enemySpawner.getEnemies();
 
-        // Set player position
         player.setPositionX(600);
         player.setPositionY(500);
 
-        // Create main container with multiple enemies
-        MainContainer mainContainer = new MainContainer(player, enemyList,inventory);
-        Potion strenght = new StrengthPotion(10,10,2);
-        Potion heal = new HealPotion(10,10,2);
-        inventory.addPotion(strenght);
+        // Main container with game components
+        MainContainer mainContainer = new MainContainer(player, enemyList, inventory, potionList);
+
+        // (Optional debug inventory additions)
+        Potion strength = new StrengthPotion(10, 10, 2);
+        Potion heal = new HealPotion(10, 10, 2);
+        inventory.addPotion(strength);
         inventory.addPotion(heal);
 
-
-        // Create the main window
+        // Setup game window
         JFrame frame = new JFrame("The Last Survivor");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(mainContainer);
@@ -64,16 +66,16 @@ public class MainApp {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        // Set up player controls
-        PlayerGunController playerController = new PlayerGunController(player,inventory);
+        // Setup player controller
+        PlayerGunController playerController = new PlayerGunController(player, inventory);
         mainContainer.getPlayerGunView().addKeyListener(playerController);
         mainContainer.getPlayerGunView().addMouseListener(playerController);
         mainContainer.getPlayerGunView().requestFocusInWindow();
 
-        // Set up enemies controller
+        // Setup enemies controller
         EnemiesController enemiesController = new EnemiesController(enemyList, player);
 
-        // Set up game loop
+        // Setup game loop for player + enemies
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         final long[] lastTime = {System.nanoTime()};
 
@@ -82,25 +84,39 @@ public class MainApp {
             float deltaTime = Math.min((currentTime - lastTime[0]) / 1_000_000_000.0f, 0.1f);
             lastTime[0] = currentTime;
 
-            // Update player and enemies
             synchronized (player) {
                 playerController.update(deltaTime);
                 enemiesController.updateAll(deltaTime);
             }
 
-            // Repaint views
             SwingUtilities.invokeLater(() -> {
                 mainContainer.getPlayerGunView().repaint();
                 mainContainer.getEnemiesView().repaint();
             });
-        }, 0, 16, TimeUnit.MILLISECONDS);
+        }, 0, 16, TimeUnit.MILLISECONDS); // ~60 FPS
 
-        // Shut down executor when window closes
+        // Repaint loop for potions view
+        ScheduledExecutorService potionExecutor = Executors.newSingleThreadScheduledExecutor();
+        potionExecutor.scheduleAtFixedRate(() -> {
+            SwingUtilities.invokeLater(() -> {
+                mainContainer.getPotionsView().repaint();
+            });
+        }, 0, 100, TimeUnit.MILLISECONDS); // ~10 FPS
+
+        // Setup potion collision handling
+        PotionCollisionHandler potionCollisionHandler = new PotionCollisionHandler(potionList, player, inventory);
+        ScheduledExecutorService collisionExecutor = Executors.newSingleThreadScheduledExecutor();
+        collisionExecutor.scheduleAtFixedRate(() -> {
+            potionCollisionHandler.checkCollisions();
+        }, 0, 50, TimeUnit.MILLISECONDS); // check 20x za sekundu
+
+        // Shutdown on window close
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 executor.shutdown();
-                // Also shutdown any scheduler in enemies
+                potionExecutor.shutdown();
+                collisionExecutor.shutdown();
                 for (Enemy enemy : enemyList) {
                     enemy.cleanup();
                 }
