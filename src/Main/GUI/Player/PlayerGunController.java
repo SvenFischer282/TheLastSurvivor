@@ -1,6 +1,12 @@
 package Main.GUI.Player;
 
 import Main.Game.Character.Player;
+import Main.Game.Collectible.Potions.Potion;
+import Main.Game.Inventory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.EventRecordingLogger;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -16,10 +22,13 @@ public class PlayerGunController implements KeyListener, MouseListener {
     private final float playerSpeed = 200.0f;
     private final float bulletSpeed = 800.0f;
     private boolean up, down, left, right;
+    private final Inventory inventory;
+    private final static Logger logger = LoggerFactory.getLogger(Player.class);
 
-    public PlayerGunController(Player player) {
+    public PlayerGunController(Player player, Inventory inventory) {
         this.player = player;
         this.gun = player.getGun();
+        this.inventory = inventory;
     }
 
     @Override
@@ -30,7 +39,17 @@ public class PlayerGunController implements KeyListener, MouseListener {
             case KeyEvent.VK_A -> left = true;
             case KeyEvent.VK_D -> right = true;
             case KeyEvent.VK_SPACE -> player.getSword().swing();
+            case KeyEvent.VK_1 -> {
+                inventory.usePotion(Potion.PotionType.HEAL);
+            }
+            case KeyEvent.VK_2, KeyEvent.VK_NUMPAD2, 16777534-> {
+                logger.info("2 was pressed");
+                inventory.usePotion(Potion.PotionType.STRENGTH);
+
+
+            }
         }
+
         updateVelocity();
     }
 

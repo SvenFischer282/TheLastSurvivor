@@ -1,5 +1,6 @@
 package Main.Game.Character;
 
+import Main.Game.Inventory;
 import Main.Game.ScoreCounter;
 import Main.Game.Weapons.Weapon;
 
@@ -13,6 +14,8 @@ import Main.Utils.Observer.GameStateObserver;
 import Main.Utils.Observer.GameStateSubject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
 
 /**
  * Represents a player character in the game.
@@ -29,6 +32,7 @@ public class Player extends Character implements GameStateSubject {
     private final static Logger logger = LoggerFactory.getLogger(Player.class);
     private List<GameStateObserver> observers = new ArrayList<>();
 
+
     public enum Direction {
         UP, DOWN, LEFT, RIGHT
     }
@@ -43,7 +47,7 @@ public class Player extends Character implements GameStateSubject {
      */
     public Player(int x, int y) {
         super(MAX_HEALTH, x, y, 2);
-        this.health = MAX_HEALTH;
+        this.health = super.getHealth();
         this.vx = 0;
         this.vy = 0;
         this.speed = 500.0f; // Default speed
@@ -104,15 +108,19 @@ public class Player extends Character implements GameStateSubject {
     }
 
     public void heal(int value) {
-
-        if (value + this.getHealth() > MAX_HEALTH) {
-            this.setHealth(MAX_HEALTH);
-            logger.info("Player was healed to max health");
+        if (value < 0) {
+            logger.warn("Cannot heal with negative value: " + value);
+            return;
+        }
+        if (this.health + value > MAX_HEALTH) {
+            this.health = MAX_HEALTH;
+            logger.info("Player was healed to max health: " + this.health);
         } else {
-            this.setHealth(this.getHealth() + value);
-            logger.info("Player was healed");
+            this.health += value;
+            logger.info("Player was healed by " + value + ". New health: " + this.health);
         }
         notifyObservers();
+        logger.debug("Heal function called with value: " + value);
     }
 
     public void addScore(int value) {
@@ -177,7 +185,7 @@ public class Player extends Character implements GameStateSubject {
         private final List<Bullet> bullets = new ArrayList<>();
 
         public Gun(int damage) {
-            super(damage);
+            super(damage/2);
             canShoot = true;
         }
 
@@ -197,7 +205,7 @@ public class Player extends Character implements GameStateSubject {
                 bullets.add(new Bullet(bulletPosX, bulletPosY, normDX, normDY, true));
 
                 // Povolenie ďalšieho výstrelu po oneskorení
-                scheduler.schedule(() -> canShoot = true, 300, TimeUnit.MILLISECONDS);
+                scheduler.schedule(() -> canShoot = true, 500, TimeUnit.MILLISECONDS);
             } else {
                 logger.warn("Gun can not shoot yet");
             }

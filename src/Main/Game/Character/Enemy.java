@@ -2,43 +2,26 @@ package Main.Game.Character;
 
 import Main.GUI.MainApp;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * Represents an enemy character in the game.
- * Enemies move towards the player (to be implemented)
- * and attack when within range. They have a cooldown period after attacking.
- * Extends the base {@link Character} class.
- */
 public class Enemy extends Character {
     private final static Logger logger = LoggerFactory.getLogger(MainApp.class);
-    /** The movement speed of the enemy (currently unused ). */
-   private float speed;
-
-    /** Flag indicating if the enemy is currently capable of attacking. */
-   private boolean ableToHit;
-   private boolean canBeHitByBullet ;
-   private boolean canBeHitBySword;
-   private Color color;
-
-    /** Scheduler service to handle the attack cooldown timing. */
+    private float speed;
+    private boolean ableToHit;
+    private boolean canBeHitByBullet;
+    private boolean canBeHitBySword;
+    private Color color;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    /**
-     * Constructs a new Enemy instance.
-     *
-     * @param health     The initial health points of the enemy.
-     * @param positionX  The initial X coordinate of the enemy.
-     * @param positionY  The initial Y coordinate of the enemy.
-     * @param damage     The amount of damage the enemy inflicts per attack.
-     */
-    public Enemy(int health, int positionX, int positionY, int damage,float speed) {
+    private List<Enemy> allEnemies; // Odkaz na všetkých nepriateľov
+
+    public Enemy(int health, int positionX, int positionY, int damage, float speed) {
         super(health, positionX, positionY, damage);
         this.speed = speed;
         this.ableToHit = true;
@@ -46,57 +29,61 @@ public class Enemy extends Character {
         this.canBeHitBySword = true;
         this.color = Color.BLUE;
     }
-    public void takeDamage(int damage){
-        if (this.getHealth() - damage > 0){
-            this.setHealth(this.getHealth()-damage);
-        }else {
-            this.setHealth(0);
-            logger.info("Ennemy died");
 
+    public void takeDamage(int damage) {
+        if (this.getHealth() - damage > 0) {
+            this.setHealth(this.getHealth() - damage);
+        } else {
+            this.setHealth(0);
+            logger.info("Enemy died");
         }
     }
 
-
-    /**
-     * Updates the enemy's state, primarily checking for player proximity to attack.
-     * @param deltaTime The time elapsed since the last update .
-     * @param player    A reference to the player character for interaction.
-     */
     @Override
     public void update(float deltaTime, Player player) {
-
-        moveToPlayer(player,deltaTime);
+        moveToPlayer(player, deltaTime);
         hitByBullet(player);
         hitBySword(player);
-
     }
 
-    /**
-     * Move the enemy towards the player
-     * Checks the distance to the player and initiates an attack if within range and ready.
-     * @param player The Player object to check the distance against.
-     * @param deltaTime The time elapsed from the last update
-     */
     void moveToPlayer(Player player, float deltaTime) {
         float hitboxRadius = 32;
-         // Movement speed in units per second
 
-        // Calculate direction vector
         float dx = player.getX() - this.getX();
         float dy = player.getY() - this.getY();
 
-        // Normalize the direction vector (convert to unit vector)
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
         if (distance > 0) {
             dx /= distance;
             dy /= distance;
         }
 
-        // Move toward player
-        this.setPositionX(this.getX() + (dx * this.speed * deltaTime));
-        this.setPositionY(this.getY() + (dy * this.speed * deltaTime));
+        float nextX = this.getX() + (dx * this.speed * deltaTime);
+        float nextY = this.getY() + (dy * this.speed * deltaTime);
 
-        // Check collision after movement
+        // Zamedzenie kolízii s inými nepriateľmi
+        boolean canMove = true;
+        if (allEnemies != null) {
+            for (Enemy other : allEnemies) {
+                if (other == this) continue;
+
+                float dist = (float) Math.sqrt(
+                        (nextX - other.getX()) * (nextX - other.getX()) +
+                                (nextY - other.getY()) * (nextY - other.getY())
+                );
+
+                if (dist < 32) { // Zabránime prekrývaniu
+                    canMove = false;
+                    break;
+                }
+            }
+        }
+
+        if (canMove) {
+            this.setPositionX(nextX);
+            this.setPositionY(nextY);
+        }
+
         float newDistanceX = Math.abs(this.getX() - player.getX());
         float newDistanceY = Math.abs(this.getY() - player.getY());
         float newDistance = (float) Math.sqrt(newDistanceX * newDistanceX + newDistanceY * newDistanceY);
@@ -106,26 +93,16 @@ public class Enemy extends Character {
         }
     }
 
-    /**
-     * Performs an attack on the specified player and starts the attack cooldown.
-     * Inflicts damage, prevents immediate re-attacking, and schedules the attack
-     * availability to be restored after a delay.
-     *
-     * @param player The Player object to attack.
-     */
     void attackPlayer(Player player) {
         logger.info("Player was hit by enemy");
         player.takeDamage(this.getDamage());
         ableToHit = false;
 
-
-        scheduler.schedule(() -> {
-            ableToHit = true;
-
-        }, 2, TimeUnit.SECONDS);
+        scheduler.schedule(() -> ableToHit = true, 2, TimeUnit.SECONDS);
     }
+
     void hitByBullet(Player player) {
-        if (!canBeHitByBullet) return;  // prevent multiple hits
+        if (!canBeHitByBullet) return;
 
         for (Player.Gun.Bullet bullet : player.getGun().getBullets()) {
             if (!bullet.isBulletActive()) continue;
@@ -138,74 +115,63 @@ public class Enemy extends Character {
 
                 this.takeDamage(player.getDamage());
                 logger.info("Player hit enemy with bullet");
-                bullet.deactivate();  // prevent multiple hits from same bullet
+                bullet.deactivate();
                 canBeHitByBullet = false;
 
-                // Allow the enemy to be hit by the next bullet after a short delay
-                scheduler.schedule(() -> canBeHitByBullet = true,
-                        300, TimeUnit.MILLISECONDS);
-                break; // exit after one successful hit
+                scheduler.schedule(() -> canBeHitByBullet = true, 300, TimeUnit.MILLISECONDS);
+                break;
             }
         }
     }
 
-
     void hitBySword(Player player) {
-        if (!canBeHitBySword || !player.getSword().isSwinging()) return; // Prevent multiple hits and check if sword is swinging
+        if (!canBeHitBySword || !player.getSword().isSwinging()) return;
 
-        int centerX = (int) player.getX() + 32; // Player center X
-        int centerY = (int) player.getY() + 32; // Player center Y
+        int centerX = (int) player.getX() + 32;
+        int centerY = (int) player.getY() + 32;
         int hitboxX, hitboxY, hitboxWidth, hitboxHeight;
 
         switch (player.getDirection()) {
             case RIGHT:
-                hitboxX = centerX; // Start at player’s center
-                hitboxY = centerY - 32; // Centered vertically
-                hitboxWidth = 64; // Extend right
-                hitboxHeight = 64; // Wide enough to cover player height
+                hitboxX = centerX;
+                hitboxY = centerY - 32;
+                hitboxWidth = 64;
+                hitboxHeight = 64;
                 break;
             case LEFT:
-                hitboxX = centerX - 64; // Extend left
-                hitboxY = centerY - 32; // Centered vertically
-                hitboxWidth = 64; // Wide hitbox
-                hitboxHeight = 64; // Wide enough to cover player height
+                hitboxX = centerX - 64;
+                hitboxY = centerY - 32;
+                hitboxWidth = 64;
+                hitboxHeight = 64;
                 break;
             case UP:
-                hitboxX = centerX - 16; // Centered horizontally
-                hitboxY = centerY - 96; // Extend upward
-                hitboxWidth = 32; // Narrow to match player width
-                hitboxHeight = 96; // Tall hitbox
+                hitboxX = centerX - 16;
+                hitboxY = centerY - 96;
+                hitboxWidth = 32;
+                hitboxHeight = 96;
                 break;
             case DOWN:
-                hitboxX = centerX - 16; // Centered horizontally
-                hitboxY = centerY; // Extend downward
-                hitboxWidth = 32; // Narrow to match player width
-                hitboxHeight = 96; // Tall hitbox
+                hitboxX = centerX - 16;
+                hitboxY = centerY;
+                hitboxWidth = 32;
+                hitboxHeight = 96;
                 break;
             default:
                 return;
         }
 
-        // Check if enemy is within the sword's hitbox
         if (this.getX() + 16 > hitboxX && this.getX() - 16 < hitboxX + hitboxWidth &&
                 this.getY() + 16 > hitboxY && this.getY() - 16 < hitboxY + hitboxHeight) {
 
             this.takeDamage(player.getSword().getDamage());
-
             canBeHitBySword = false;
 
-            // Allow the enemy to be hit by the next sword swing
-            scheduler.schedule(() -> {
-                canBeHitBySword = true;
-            }, 300, TimeUnit.MILLISECONDS);
+            scheduler.schedule(() -> canBeHitBySword = true, 300, TimeUnit.MILLISECONDS);
         }
     }
 
-    /**
-     * Function to shut down the scheduler when the enemy is killed
-     */
-     public void cleanup() {
-         scheduler.shutdown();
+    public void cleanup() {
+        scheduler.shutdown();
     }
 
     public Color getColor() {
@@ -230,6 +196,10 @@ public class Enemy extends Character {
 
     public void setAbleToHit(boolean ableToHit) {
         this.ableToHit = ableToHit;
+    }
+
+    public void setAllEnemies(List<Enemy> allEnemies) {
+        this.allEnemies = allEnemies;
     }
 
     @Override

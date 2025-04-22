@@ -2,6 +2,10 @@ package Main.Game.Collectible.Potions;
 
 import Main.Game.Character.Player;
 import Main.Game.Collectible.Collectible;
+import Main.Game.Inventory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +18,7 @@ public class StrengthPotion extends Potion implements Collectible {
 
     // Scheduler for delayed effect activation
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final Logger logger = LoggerFactory.getLogger(Inventory.class);
 
     /**
      * Creates a new strength potion at specified coordinates.
@@ -35,15 +40,24 @@ public class StrengthPotion extends Potion implements Collectible {
      */
     @Override
     public void use(Player player) {
-        // Schedule the strength boost after 10 seconds
-        scheduler.schedule(() -> {
-            player.setDamage(player.getDamage() + this.getEffectStrength());
-            System.out.println("Strength increased by " + this.getEffectStrength());
-        }, 10, TimeUnit.SECONDS);
+        // Ensure thread-safe damage modification
+        synchronized (player) {
+            // Store original damage for restoration
+            double originalDamage = player.getDamage();
+            double effectStrength = this.getEffectStrength();
 
-        // Apply initial penalty
-        player.setDamage(player.getDamage() - this.getEffectStrength());
-    }
+            // Immediately increase damage
+            player.setDamage((int)originalDamage +(int) effectStrength);
+            logger.info("Strength potion used: Damage increased by " + effectStrength + " to " + player.getDamage());
+
+            // Schedule damage restoration after 10 seconds
+            scheduler.schedule(() -> {
+                synchronized (player) {
+                    player.setDamage((int) originalDamage);
+                    logger.info("Strength potion expired: Damage restored to " + originalDamage);
+                }
+            }, 5, TimeUnit.SECONDS);
+        }}
 
     /**
      * @return Brief description of the potion's effect

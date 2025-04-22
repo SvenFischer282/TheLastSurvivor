@@ -4,6 +4,8 @@ import Main.Game.Collectible.Potions.Potion;
 import Main.Game.Character.Player;
 import Main.Utils.Observer.GameStateObserver;
 import Main.Utils.Observer.GameStateSubject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;/**
@@ -15,6 +17,7 @@ public class Inventory implements GameStateSubject {
      */
     private List<Potion> items;
     private List<GameStateObserver> observers = new ArrayList<>();
+    private Logger logger = LoggerFactory.getLogger(Inventory.class);
 
     /**
      * The player who owns this inventory.
@@ -68,6 +71,8 @@ public class Inventory implements GameStateSubject {
             if (potion.getType() == type) {
                 potion.use(player);
                 items.remove(i);
+                logger.info("Potion " + potion.getName() +  " from inventory.");
+                notifyObservers();
                 return true;
             }
         }

@@ -22,6 +22,7 @@ public class EnemySpawner {
             int x = coordinates[0];
             int y = coordinates[1];
             Enemy enemy = basicEnemyFactory.createEnemy(x, y);
+            enemy.setAllEnemies(enemies);
             enemies.add(enemy);
         }
     }
@@ -33,6 +34,8 @@ public class EnemySpawner {
             int y = coordinates[1];
             Enemy enemy = fastZombieFactory.createEnemy(x, y);
             enemies.add(enemy);
+            enemy.setAllEnemies(enemies);
+
         }
     }
     public List<Enemy> getEnemies() {

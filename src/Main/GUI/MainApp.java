@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import Main.Game.Collectible.Potions.HealPotion;
 import Main.Game.Collectible.Potions.Potion;
 import Main.Game.Collectible.Potions.StrengthPotion;
 import Main.Game.Inventory;
@@ -50,7 +51,10 @@ public class MainApp {
         // Create main container with multiple enemies
         MainContainer mainContainer = new MainContainer(player, enemyList,inventory);
         Potion strenght = new StrengthPotion(10,10,2);
+        Potion heal = new HealPotion(10,10,2);
         inventory.addPotion(strenght);
+        inventory.addPotion(heal);
+
 
         // Create the main window
         JFrame frame = new JFrame("The Last Survivor");
@@ -61,7 +65,7 @@ public class MainApp {
         frame.setVisible(true);
 
         // Set up player controls
-        PlayerGunController playerController = new PlayerGunController(player);
+        PlayerGunController playerController = new PlayerGunController(player,inventory);
         mainContainer.getPlayerGunView().addKeyListener(playerController);
         mainContainer.getPlayerGunView().addMouseListener(playerController);
         mainContainer.getPlayerGunView().requestFocusInWindow();
