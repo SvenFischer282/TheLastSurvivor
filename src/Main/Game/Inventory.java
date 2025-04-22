@@ -2,15 +2,19 @@ package Main.Game;
 
 import Main.Game.Collectible.Potions.Potion;
 import Main.Game.Character.Player;
+import Main.Utils.Observer.GameStateObserver;
+import Main.Utils.Observer.GameStateSubject;
+
 import java.util.ArrayList;
 import java.util.List;/**
  * Represents a player's inventory system that stores and manages potions.
  */
-public class Inventory {
+public class Inventory implements GameStateSubject {
     /**
      * The list of potions currently in the inventory.
      */
     private List<Potion> items;
+    private List<GameStateObserver> observers = new ArrayList<>();
 
     /**
      * The player who owns this inventory.
@@ -26,6 +30,23 @@ public class Inventory {
         this.player = player;
     }
 
+    @Override
+    public void addObserver(GameStateObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(GameStateObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (GameStateObserver observer : observers) {
+            observer.update();
+        }
+    }
+
     /**
      * Adds a potion to the inventory.
      * @param potion The potion to add
@@ -33,6 +54,7 @@ public class Inventory {
     public void addPotion(Potion potion) {
         items.add(potion);
         System.out.println("Added " + potion.getClass().getSimpleName() + " to inventory.");
+        notifyObservers();
     }
 
     /**

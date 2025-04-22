@@ -3,7 +3,9 @@ package Main.GUI;
 import javax.swing.*;
 
 import Main.Game.Character.Player;
+import Main.Game.Inventory;
 import Main.Game.ScoreCounter;
+import Main.Game.Collectible.Potions.Potion;
 import Main.Utils.Observer.GameStateObserver;
 import Main.Utils.Observer.GameStateSubject;
 import org.slf4j.Logger;
@@ -11,24 +13,26 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 
-
-/**
- * A Swing component that renders a HUD for the player and observes state changes.
- */
 public class HUD extends JComponent implements GameStateObserver {
-    private Player player;
-    private ScoreCounter scoreCounter;
+    private final Player player;
+    private final ScoreCounter scoreCounter;
+    private final Inventory inventory;
     private final Logger logger = LoggerFactory.getLogger(HUD.class);
 
-    public HUD(Player player, ScoreCounter scoreCounter) {
+    public HUD(Player player, ScoreCounter scoreCounter, Inventory inventory) {
         this.player = player;
         this.scoreCounter = scoreCounter;
-        // Register HUD as an observer of Player and ScoreCounter
+        this.inventory = inventory;
+
+        // Register HUD as an observer
         if (player instanceof GameStateSubject) {
             ((GameStateSubject) player).addObserver(this);
         }
         if (scoreCounter instanceof GameStateSubject) {
             ((GameStateSubject) scoreCounter).addObserver(this);
+        }
+        if (inventory instanceof GameStateSubject) {
+            inventory.addObserver(this);
         }
     }
 
@@ -36,11 +40,17 @@ public class HUD extends JComponent implements GameStateObserver {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-
-        int health = player.getHealth();
         g.setColor(Color.WHITE);
-        g.drawString("Health: " + health, 10, 20);
+        g.drawString("Health: " + player.getHealth(), 10, 20);
         g.drawString("Score: " + scoreCounter.getScore(), 10, 40);
+
+        // Display potion counts
+        int y = 60;
+        for (Potion.PotionType type : Potion.PotionType.values()) {
+            int count = inventory.getPotionCount(type);
+            g.drawString(type.name() + " potions: " + count, 10, y);
+            y += 20;
+        }
     }
 
     @Override
@@ -50,18 +60,19 @@ public class HUD extends JComponent implements GameStateObserver {
 
     @Override
     public void update() {
-        this.repaint(); // Trigger repaint when notified of a state change
-        logger.info("health: " + player.getHealth() + player);
-
+        this.repaint();
+        logger.info("HUD update");
     }
 
-    // Cleanup method to remove HUD as an observer when no longer needed
     public void cleanup() {
         if (player instanceof GameStateSubject) {
             ((GameStateSubject) player).removeObserver(this);
         }
         if (scoreCounter instanceof GameStateSubject) {
             ((GameStateSubject) scoreCounter).removeObserver(this);
+        }
+        if (inventory instanceof GameStateSubject) {
+            inventory.removeObserver(this);
         }
     }
 }

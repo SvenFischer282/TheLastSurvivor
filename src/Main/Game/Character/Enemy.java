@@ -134,6 +134,7 @@ public class Enemy extends Character {
                 bulletY > this.getY() - 16 && bulletY < this.getY() + 16) {
 
             this.takeDamage(player.getDamage());
+            logger.info("Player hit by bullet");
             player.getGun().resetBullet();
             canBeHitByBullet = false;
 
@@ -185,7 +186,7 @@ public class Enemy extends Character {
                 this.getY() + 16 > hitboxY && this.getY() - 16 < hitboxY + hitboxHeight) {
 
             this.takeDamage(player.getSword().getDamage());
-            logger.info(this.toString()+" hit by sword");
+
             canBeHitBySword = false;
 
             // Allow the enemy to be hit by the next sword swing
