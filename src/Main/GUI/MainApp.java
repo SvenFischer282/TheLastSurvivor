@@ -25,36 +25,7 @@ public class MainApp {
     public static void main(String[] args) {
 
 
-        // Show loading screen
-        JFrame loadingFrame = new JFrame("Loading...");
-        loadingFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        loadingFrame.setSize(400, 200);
-        loadingFrame.setLocationRelativeTo(null);
-        loadingFrame.setUndecorated(true); // Optional: Remove window borders
 
-        JPanel loadingPanel = new JPanel(new BorderLayout());
-        JLabel loadingLabel = new JLabel("Loading The Last Survivor...", SwingConstants.CENTER);
-        loadingLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        JProgressBar progressBar = new JProgressBar();
-        progressBar.setIndeterminate(true); // Indeterminate animation
-        loadingPanel.add(loadingLabel, BorderLayout.CENTER);
-        loadingPanel.add(progressBar, BorderLayout.SOUTH);
-        loadingFrame.add(loadingPanel);
-
-        // Display loading screen
-        SwingUtilities.invokeLater(() -> loadingFrame.setVisible(true));
-
-        // Simulate loading (e.g., 3 seconds)
-        new Thread(() -> {
-            try {
-                Thread.sleep(500); // Adjust duration as needed
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            // Close loading screen and start game
-            SwingUtilities.invokeLater(() -> {
-                loadingFrame.dispose(); // Close loading screen
 
                 // Initialize game entities
                 Player player = new Player(400, 300);
@@ -123,7 +94,5 @@ public class MainApp {
                         }
                     }
                 });
-            });
-        }).start();
     }
 }

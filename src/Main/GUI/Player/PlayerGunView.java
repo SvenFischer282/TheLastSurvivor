@@ -137,7 +137,7 @@ private final Player.Sword sword;
             g.fillRect(x, y, width, height);
         }
         // Debug info
-        g.setColor(Color.WHITE);
-        g.drawString(String.format("Health:%d", player.getHealth()), 10, 20);
+//        g.setColor(Color.WHITE);
+//        g.drawString(String.format("Health:%d", player.getHealth()), 10, 20);
     }
 }

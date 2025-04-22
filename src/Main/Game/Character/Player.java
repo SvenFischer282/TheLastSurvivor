@@ -3,15 +3,21 @@ package Main.Game.Character;
 import Main.Game.ScoreCounter;
 import Main.Game.Weapons.Weapon;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import Main.Utils.Observer.GameStateObserver;
+import Main.Utils.Observer.GameStateSubject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Represents a player character in the game.
  */
-public class Player extends Character {
+public class Player extends Character implements GameStateSubject {
     private float vx, vy;
     private int health;
     private float speed;
@@ -21,31 +27,66 @@ public class Player extends Character {
     private static final int MAX_HEALTH = 10;
     private final ScoreCounter scoreCounter = ScoreCounter.getInstance();
     private final static Logger logger = LoggerFactory.getLogger(Player.class);
-    public enum Direction{
+    private List<GameStateObserver> observers = new ArrayList<>();
+
+    public enum Direction {
         UP, DOWN, LEFT, RIGHT
     }
+
     Direction direction;
 
     /**
      * Constructs a new Player instance.
+     *
      * @param x Initial x-coordinate
      * @param y Initial y-coordinate
      */
     public Player(int x, int y) {
-        super(10, x, y,2);
+        super(MAX_HEALTH, x, y, 2);
+        this.health = MAX_HEALTH;
         this.vx = 0;
         this.vy = 0;
         this.speed = 500.0f; // Default speed
         this.rotation = false;
         this.gun = new Gun(this.getDamage());
-        this.sword = new Sword(this.getDamage());
+        this.sword = new Sword(this.getDamage() / 2);
         this.direction = Direction.RIGHT;
         logger.info("Player was inicialized");
 
     }
 
+    @Override
+    public void addObserver(GameStateObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(GameStateObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (GameStateObserver observer : observers) {
+            observer.update();
+        }
+    }
+
+    @Override
+    public void takeDamage(int damage) {
+        if (this.health - damage > 0) {
+            this.health -= damage;
+        } else {
+            this.health = 0;
+        }
+        notifyObservers();
+        logger.info("Player damaged: " + this.health + this);
+    }
+
+
     /**
      * Updates the player's position and gun based on time elapsed.
+     *
      * @param deltaTime Time elapsed since last update
      */
     @Override
@@ -61,20 +102,23 @@ public class Player extends Character {
         gun.update(deltaTime);
 
     }
-    public void heal(int value){
+
+    public void heal(int value) {
 
         if (value + this.getHealth() > MAX_HEALTH) {
             this.setHealth(MAX_HEALTH);
             logger.info("Player was healed to max health");
-        }
-        else{
+        } else {
             this.setHealth(this.getHealth() + value);
             logger.info("Player was healed");
         }
+        notifyObservers();
     }
-    public void addScore(int value){
+
+    public void addScore(int value) {
         logger.info("Adding score to player");
         scoreCounter.setScore(scoreCounter.getScore() + value);
+
     }
 
     @Override
@@ -84,6 +128,9 @@ public class Player extends Character {
     public void setVelocity(float vx, float vy) {
         this.vx = vx;
         this.vy = vy;
+    }
+    public int getHealth() {
+        return this.health;
     }
 
     public Direction getDirection() {
@@ -117,7 +164,10 @@ public class Player extends Character {
     public Gun getGun() {
         return gun;
     }
-    public Sword getSword() {return sword;}
+
+    public Sword getSword() {
+        return sword;
+    }
 
     /**
      * Nested class representing a gun weapon wielded by the player.
@@ -134,6 +184,7 @@ public class Player extends Character {
 
         /**
          * Constructs a new gun istance
+         *
          * @param damage Initial damage
          */
         public Gun(int damage) {
@@ -148,6 +199,7 @@ public class Player extends Character {
 
         /**
          * Handles bullet shooting and reloading time
+         *
          * @param target_x Target`s X coordinate
          * @param target_y Target`s Y coordinate
          */
@@ -159,10 +211,11 @@ public class Player extends Character {
                 bulletPosY = Player.this.getY();
 
 
-            }else{
+            } else {
                 logger.warn("Gun can not shot yet");
             }
         }
+
         /**
          * Setter for bullet velocity.
          * Only sets the velocity if the bullet is active and currently stationary.
@@ -189,7 +242,7 @@ public class Player extends Character {
                 bulletPosY += dy * deltaTime;
 
                 if (bulletPosX < 0 || bulletPosX > SCREEN_WIDTH ||
-                        bulletPosY < 0 || bulletPosY > SCREEN_HEIGHT ) {
+                        bulletPosY < 0 || bulletPosY > SCREEN_HEIGHT) {
                     resetBullet();
 
                 }
@@ -228,12 +281,15 @@ public class Player extends Character {
         }
     }
 
-    public class Sword extends Weapon{
+    public class Sword extends Weapon {
         private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         private boolean isSwinging;
+        private boolean swingAvalible;
+
         public Sword(int damage) {
             super(damage * 2); // Sword deals more damage than the gun
             this.isSwinging = false;
+            swingAvalible = true;
         }
 
         /**
@@ -241,9 +297,15 @@ public class Player extends Character {
          * The swing lasts for 300ms and then ends automatically.
          */
         public void swing() {
-            if (!isSwinging) {
+            if (!isSwinging && swingAvalible) {
+                swingAvalible = false;
                 isSwinging = true;
-                scheduler.schedule(() -> isSwinging = false, 300, TimeUnit.MILLISECONDS);
+                scheduler.schedule(() -> {
+                    isSwinging = false;
+                }, 200, TimeUnit.MILLISECONDS);
+                scheduler.schedule(() -> {
+                    swingAvalible = true;
+                }, 2000, TimeUnit.MILLISECONDS);
             }
         }
 
