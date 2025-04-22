@@ -127,23 +127,28 @@ public class Enemy extends Character {
     void hitByBullet(Player player) {
         if (!canBeHitByBullet) return;  // prevent multiple hits
 
-        float bulletX = player.getGun().getBulletPosX();
-        float bulletY = player.getGun().getBulletPosY();
+        for (Player.Gun.Bullet bullet : player.getGun().getBullets()) {
+            if (!bullet.isBulletActive()) continue;
 
-        if (bulletX > this.getX() - 16 && bulletX < this.getX() + 16 &&
-                bulletY > this.getY() - 16 && bulletY < this.getY() + 16) {
+            float bulletX = bullet.getBulletPosX();
+            float bulletY = bullet.getBulletPosY();
 
-            this.takeDamage(player.getDamage());
-            logger.info("Player hit by bullet");
-            player.getGun().resetBullet();
-            canBeHitByBullet = false;
+            if (bulletX > this.getX() - 16 && bulletX < this.getX() + 16 &&
+                    bulletY > this.getY() - 16 && bulletY < this.getY() + 16) {
 
-            // Allow the enemy to be hit by the next bullet after a short delay
-            scheduler.schedule(() -> {
-                canBeHitByBullet = true;
-            }, 300, TimeUnit.MILLISECONDS); // adjust delay as needed
+                this.takeDamage(player.getDamage());
+                logger.info("Player hit enemy with bullet");
+                bullet.deactivate();  // prevent multiple hits from same bullet
+                canBeHitByBullet = false;
+
+                // Allow the enemy to be hit by the next bullet after a short delay
+                scheduler.schedule(() -> canBeHitByBullet = true,
+                        300, TimeUnit.MILLISECONDS);
+                break; // exit after one successful hit
+            }
         }
     }
+
 
     void hitBySword(Player player) {
         if (!canBeHitBySword || !player.getSword().isSwinging()) return; // Prevent multiple hits and check if sword is swinging

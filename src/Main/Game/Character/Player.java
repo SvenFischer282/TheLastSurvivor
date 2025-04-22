@@ -169,117 +169,104 @@ public class Player extends Character implements GameStateSubject {
         return sword;
     }
 
-    /**
-     * Nested class representing a gun weapon wielded by the player.
-     */
     public class Gun extends Weapon {
         private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         private boolean canShoot;
-        private float bulletPosX;
-        private float bulletPosY;
-        private float dx, dy;
-        private boolean bulletActive;
         private static final int SCREEN_WIDTH = 1200;
         private static final int SCREEN_HEIGHT = 722;
+        private final List<Bullet> bullets = new ArrayList<>();
 
-        /**
-         * Constructs a new gun istance
-         *
-         * @param damage Initial damage
-         */
         public Gun(int damage) {
             super(damage);
             canShoot = true;
-            bulletActive = false;
-            bulletPosX = Player.this.getX();
-            bulletPosY = Player.this.getY();
-            dx = 0;
-            dy = 0;
         }
 
-        /**
-         * Handles bullet shooting and reloading time
-         *
-         * @param target_x Target`s X coordinate
-         * @param target_y Target`s Y coordinate
-         */
         public void shoot(int target_x, int target_y) {
-            if (canShoot && !bulletActive) {
+            if (canShoot) {
                 canShoot = false;
-                bulletActive = true;
-                bulletPosX = Player.this.getX();
-                bulletPosY = Player.this.getY();
 
+                float bulletPosX = Player.this.getX();
+                float bulletPosY = Player.this.getY();
+                float dx = target_x - bulletPosX;
+                float dy = target_y - bulletPosY;
+                float length = (float) Math.sqrt(dx * dx + dy * dy);
+                float speed = 1000f;
+                float normDX = (dx / length) * speed;
+                float normDY = (dy / length) * speed;
 
+                bullets.add(new Bullet(bulletPosX, bulletPosY, normDX, normDY, true));
+
+                // Povolenie ďalšieho výstrelu po oneskorení
+                scheduler.schedule(() -> canShoot = true, 300, TimeUnit.MILLISECONDS);
             } else {
-                logger.warn("Gun can not shot yet");
+                logger.warn("Gun can not shoot yet");
             }
         }
 
-        /**
-         * Setter for bullet velocity.
-         * Only sets the velocity if the bullet is active and currently stationary.
-         *
-         * @param dx The desired horizontal velocity component.
-         * @param dy The desired vertical velocity component.
-         */
-        public void setBulletVelocity(float dx, float dy) {
-            if (bulletActive && this.dx == 0 && this.dy == 0) {
-                this.dx = dx;
-                this.dy = dy;
-            }
-        }
-
-        /**
-         * Updates the bullet's position based on its velocity and the elapsed time.
-         * If the bullet moves off-screen, it is reset.
-         *
-         * @param deltaTime The time elapsed since the last update
-         */
         public void update(float deltaTime) {
-            if (bulletActive) {
-                bulletPosX += dx * deltaTime;
-                bulletPosY += dy * deltaTime;
+            List<Bullet> toRemove = new ArrayList<>();
+            for (Bullet bullet : bullets) {
+                if (bullet.bulletActive) {
+                    bullet.bulletPosX += bullet.dx * deltaTime;
+                    bullet.bulletPosY += bullet.dy * deltaTime;
 
-                if (bulletPosX < 0 || bulletPosX > SCREEN_WIDTH ||
-                        bulletPosY < 0 || bulletPosY > SCREEN_HEIGHT) {
-                    resetBullet();
-
+                    if (bullet.bulletPosX < 0 || bullet.bulletPosX > SCREEN_WIDTH ||
+                            bullet.bulletPosY < 0 || bullet.bulletPosY > SCREEN_HEIGHT) {
+                        toRemove.add(bullet);
+                    }
                 }
             }
+            bullets.removeAll(toRemove);
         }
 
-        /**
-         * Resets the bullet's state to inactive.
-         * This sets the bulletActive flag to false, zeroes out its velocity,
-         * and repositions it at the player's current coordinates.
-         */
-        public void resetBullet() {
-            bulletActive = false;
-            canShoot = true;
-            dx = 0;
-            dy = 0;
-            bulletPosX = Player.this.getX();
-            bulletPosY = Player.this.getY();
-            logger.info("Bullet was reseted");
-        }
-
-        public float getBulletPosX() {
-            return bulletPosX;
-        }
-
-        public float getBulletPosY() {
-            return bulletPosY;
-        }
-
-        public boolean isBulletActive() {
-            return bulletActive;
+        public List<Bullet> getBullets() {
+            return bullets;
         }
 
         public boolean canShoot() {
             return canShoot;
         }
+
+        public class Bullet {
+            private float bulletPosX;
+            private float bulletPosY;
+            private final float dx;
+            private final float dy;
+            private boolean bulletActive;
+
+            public Bullet(float bulletPosX, float bulletPosY, float dx, float dy, boolean bulletActive) {
+                this.bulletPosX = bulletPosX;
+                this.bulletPosY = bulletPosY;
+                this.dx = dx;
+                this.dy = dy;
+                this.bulletActive = bulletActive;
+            }
+
+            public float getBulletPosX() {
+                return bulletPosX;
+            }
+
+            public float getBulletPosY() {
+                return bulletPosY;
+            }
+
+            public boolean isBulletActive() {
+                return bulletActive;
+            }
+            public void deactivate() {
+                this.bulletActive = false;
+            }
+
+            public float getDx() {
+                return dx;
+            }
+
+            public float getDy() {
+                return dy;
+            }
+        }
     }
+
 
     public class Sword extends Weapon {
         private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);

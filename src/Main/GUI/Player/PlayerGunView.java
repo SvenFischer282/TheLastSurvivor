@@ -7,45 +7,20 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import java.util.List;
 
 /**
  * A Swing component that renders both the player character and their gun.
  * Handles visualization of player sprites, bullets, and health information.
  */
 public class PlayerGunView extends JPanel {
-    /**
-     * The player model being visualized.
-     */
     private final Player player;
-
-    /**
-     * The gun model associated with the player.
-     */
     private final Player.Gun gun;
-    /**
-     * The sword model associated with the player
-     */
-private final Player.Sword sword;
-    /**
-     * Image of the player facing right.
-     */
+    private final Player.Sword sword;
     private Image playerImageR;
-
-    /**
-     * Image of the player facing left.
-     */
     private Image playerImageL;
-
-    /**
-     * The diameter of bullet visualization in pixels.
-     */
     private static final int BULLET_SIZE = 10;
 
-    /**
-     * Creates a new PlayerGunView for the specified player.
-     *
-     * @param player The player to visualize
-     */
     public PlayerGunView(Player player) {
         this.player = player;
         this.gun = player.getGun();
@@ -64,12 +39,6 @@ private final Player.Sword sword;
         }
     }
 
-    /**
-     * Creates a placeholder image when player sprites cannot be loaded.
-     *
-     * @param color The color for the placeholder
-     * @return A generated placeholder image
-     */
     private Image createPlaceholderImage(Color color) {
         BufferedImage img = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = img.createGraphics();
@@ -79,65 +48,61 @@ private final Player.Sword sword;
         return img;
     }
 
-    /**
-     * Renders the player, gun, and debug information.
-     * @param g The Graphics context to render to
-     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Render Player
+        // Render player
         Image currentImage = player.isRotation() ? playerImageL : playerImageR;
         if (currentImage != null) {
             g.drawImage(currentImage, (int) player.getX(), (int) player.getY(), this);
         }
 
-        // Render Gun (bullet)
-        if (gun.isBulletActive()) {
-            g.setColor(Color.RED);
-            g.fillOval((int) gun.getBulletPosX() - BULLET_SIZE / 2,
-                    (int) gun.getBulletPosY() - BULLET_SIZE / 2,
-                    BULLET_SIZE, BULLET_SIZE);
+        // Render all bullets
+        List<Player.Gun.Bullet> bullets = gun.getBullets();
+        g.setColor(Color.RED);
+        for (Player.Gun.Bullet bullet : bullets) {
+            if (bullet.isBulletActive()) {
+                g.fillOval((int) bullet.getBulletPosX() - BULLET_SIZE / 2,
+                        (int) bullet.getBulletPosY() - BULLET_SIZE / 2,
+                        BULLET_SIZE, BULLET_SIZE);
+            }
         }
-        // Render Sword
+
+        // Render sword
         if (sword.isSwinging()) {
             g.setColor(Color.GRAY);
             int x, y, width, height;
-
             switch (player.getDirection()) {
-                case RIGHT:
+                case RIGHT -> {
                     x = (int) player.getX() + 42;
                     y = (int) player.getY() + 29;
                     width = 50;
                     height = 5;
-                    break;
-                case LEFT:
+                }
+                case LEFT -> {
                     x = (int) player.getX() - 43;
                     y = (int) player.getY() + 29;
                     width = 50;
                     height = 5;
-                    break;
-                case UP:
+                }
+                case UP -> {
                     x = (int) player.getX() + 42;
                     y = (int) player.getY() - 25;
                     width = 5;
                     height = 50;
-                    break;
-                case DOWN:
+                }
+                case DOWN -> {
                     x = (int) player.getX() + 42;
                     y = (int) player.getY() + 42;
                     width = 5;
                     height = 50;
-                    break;
-                default:
+                }
+                default -> {
                     return;
+                }
             }
-
             g.fillRect(x, y, width, height);
         }
-        // Debug info
-//        g.setColor(Color.WHITE);
-//        g.drawString(String.format("Health:%d", player.getHealth()), 10, 20);
     }
 }
