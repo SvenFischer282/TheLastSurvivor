@@ -6,6 +6,7 @@ import Main.Game.Character.Enemy;
 import Main.Game.Character.EnemyFactory.EnemySpawner;
 import Main.Game.Character.Player;
 import Main.Game.Collectible.Coins.CoinCollisionHandler;
+import Main.Game.Collectible.Coins.CoinFactory.CoinSpawner;
 import Main.Game.Collectible.Coins.Coins;
 import Main.Game.Collectible.Coins.GoldCoin;
 import Main.Game.Collectible.Coins.SilverCoin;
@@ -39,8 +40,15 @@ public class MainApp {
         Inventory inventory = new Inventory(player);
 
         // Spawn enemies and potions
-        EnemySpawner enemySpawner = new EnemySpawner();
+        CoinSpawner coinSpawner = new CoinSpawner();
+        EnemySpawner enemySpawner = new EnemySpawner(coinSpawner);
         PotionSpawner potionSpawner = new PotionSpawner();
+
+
+        coinSpawner.spawnGoldCoin(100,20);
+        coinSpawner.spawnGoldCoin(200,20);
+        coinSpawner.spawnGoldCoin(300,20);
+        coinSpawner.spawnGoldCoin(400,20);
 
         potionSpawner.spawnStrengthPotion(1);
         potionSpawner.spawnHealPotion(1);
@@ -55,14 +63,14 @@ public class MainApp {
         player.setPositionY(500);
 
 
-        List<Coins> coins = new ArrayList<>();
-        GoldCoin goldCoin = new GoldCoin(200,100);
+        List<Coins> coins = coinSpawner.getCoins();
+        GoldCoin goldCoin = new GoldCoin(200, 100);
         coins.add(goldCoin);
-        SilverCoin silverCoin = new SilverCoin(300,100);
+        SilverCoin silverCoin = new SilverCoin(300, 100);
         coins.add(silverCoin);
 
         // Main container with game components
-        MainContainer mainContainer = new MainContainer(player, enemyList, inventory, potionList,coins);
+        MainContainer mainContainer = new MainContainer(player, enemyList, inventory, potionList, coins);
 
         // (Optional debug inventory additions)
         Potion strength = new StrengthPotion(10, 10, 2);
@@ -124,6 +132,7 @@ public class MainApp {
                 }
                 playerController.update(deltaTime);
                 enemiesController.updateAll(deltaTime);
+                enemySpawner.removeDeadEnemies();
 
                 // Handle wave transition delay
                 if (waveTransition[0]) {
@@ -150,6 +159,7 @@ public class MainApp {
                     boolean allEnemiesDead = enemyList.stream().allMatch(enemy -> enemy.getHealth() <= 0);
                     if (allEnemiesDead && !enemyList.isEmpty()) {
                         // Clear dead enemies and start transition
+
                         enemyList.clear();
                         logger.debug("Cleared dead enemies for wave {}", waveNumber[0]);
                         logger.info("Initiating transition for Wave {}", waveNumber[0] + 1);
@@ -202,8 +212,8 @@ public class MainApp {
                 executor.shutdown();
                 potionExecutor.shutdown();
                 collisionExecutor.shutdown();
-                coinCollisionExecutor.shutdown(); // shutdown coin collision handler
-                coinRepaintExecutor.shutdown();   // shutdown coin view repainter
+                coinCollisionExecutor.shutdown();
+                coinRepaintExecutor.shutdown();
                 for (Enemy enemy : enemyList) {
                     enemy.cleanup();
                 }

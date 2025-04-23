@@ -1,6 +1,7 @@
 package Main.Game.Character.EnemyFactory;
 
 import Main.Game.Character.Enemy;
+import Main.Game.Collectible.Coins.CoinFactory.CoinSpawner;
 import Main.Utils.RandomBorderCoordinates;
 
 import java.util.ArrayList;
@@ -14,16 +15,17 @@ public class EnemySpawner {
     private final List<Enemy> enemies = new ArrayList<>();
     private final BasicEnemyFactory basicEnemyFactory;
     private final FastZombieFactory fastZombieFactory;
+    private final CoinSpawner coinSpawner;
     private static final float MIN_SPAWN_DISTANCE = 64.0f; // Minimum distance between enemies (based on enemy size)
     private static final int MAX_SPAWN_ATTEMPTS = 10; // Maximum attempts to find a non-overlapping position
     private final Random random = new Random();
     enum enemyVariants{
         BASIC,FAST_ZOMBIE,
     }
-    public EnemySpawner() {
+    public EnemySpawner(CoinSpawner coinSpawner) {
         this.basicEnemyFactory = new BasicEnemyFactory();
         this.fastZombieFactory = new FastZombieFactory();
-
+        this.coinSpawner = coinSpawner;
     }
 
     /**
@@ -131,6 +133,7 @@ public class EnemySpawner {
     public void removeDeadEnemies() {
         for (Enemy enemy : enemies) {
             if (enemy.getHealth() <= 0) {
+                coinSpawner.spawnGoldCoin((int)enemy.getX(),(int)enemy.getY());
                 enemy.cleanup();
             }
         }
