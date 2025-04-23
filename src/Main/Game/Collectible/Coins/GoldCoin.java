@@ -11,17 +11,20 @@ public class GoldCoin extends Coins implements Collectible {
 
     /** The point value awarded for collecting this coin */
     private static final int GOLD_COIN_VALUE = 5;
+    private final String name = "Gold Coin";
 
     /**
      * Creates a new gold coin at specified coordinates.
      * @param x The x-coordinate position in the game world
      * @param y The y-coordinate position in the game world
-     * @param name The display name of the coin (will be overridden to "Gold coin")
-     */
-    public GoldCoin(int x, int y, String name) {
-        super(x, y, "Gold coin");
-    }
 
+     */
+    public GoldCoin(int x, int y) {
+        super(x, y);
+    }
+    public String getName() {
+        return name;
+    }
     /**
      * Handles collection by the player:
      * - Logs the collection event
@@ -32,5 +35,8 @@ public class GoldCoin extends Coins implements Collectible {
     public void collect(Player player) {
         System.out.println("Gold coin collected");
         player.addScore(GOLD_COIN_VALUE);
+    }
+    public int getValue(){
+        return GOLD_COIN_VALUE;
     }
 }

@@ -11,17 +11,23 @@ public class SilverCoin extends Coins implements Collectible {
 
     /** The point value awarded for collecting this coin */
     private static final int SILVER_COIN_VALUE = 2;
+    private final String name = "Silver Coin";
 
     /**
      * Creates a new silver coin at specified coordinates.
      * @param x The x-coordinate position in the game world
      * @param y The y-coordinate position in the game world
-     * @param name The display name of the coin (will be overridden to "Gold coin")
-     */
-    public SilverCoin(int x, int y, String name) {
-        super(x, y, "Silever coin");
-    }
 
+     */
+    public SilverCoin(int x, int y) {
+        super(x, y);
+    }
+    public String getName() {
+        return name;
+    }
+    public int getValue() {
+        return SILVER_COIN_VALUE;
+    }
     /**
      * Handles collection by the player:
      * - Logs the collection event

@@ -5,6 +5,10 @@ import Main.GUI.Player.PlayerGunController;
 import Main.Game.Character.Enemy;
 import Main.Game.Character.EnemyFactory.EnemySpawner;
 import Main.Game.Character.Player;
+import Main.Game.Collectible.Coins.CoinCollisionHandler;
+import Main.Game.Collectible.Coins.Coins;
+import Main.Game.Collectible.Coins.GoldCoin;
+import Main.Game.Collectible.Coins.SilverCoin;
 import Main.Game.Collectible.Potions.HealPotion;
 import Main.Game.Collectible.Potions.Potion;
 import Main.Game.Collectible.Potions.PotionFactory.PotionSpawner;
@@ -16,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -49,8 +54,15 @@ public class MainApp {
         player.setPositionX(600);
         player.setPositionY(500);
 
+
+        List<Coins> coins = new ArrayList<>();
+        GoldCoin goldCoin = new GoldCoin(200,100);
+        coins.add(goldCoin);
+        SilverCoin silverCoin = new SilverCoin(300,100);
+        coins.add(silverCoin);
+
         // Main container with game components
-        MainContainer mainContainer = new MainContainer(player, enemyList, inventory, potionList);
+        MainContainer mainContainer = new MainContainer(player, enemyList, inventory, potionList,coins);
 
         // (Optional debug inventory additions)
         Potion strength = new StrengthPotion(10, 10, 2);
@@ -161,12 +173,26 @@ public class MainApp {
                 mainContainer.getPotionsView().repaint();
             });
         }, 0, 100, TimeUnit.MILLISECONDS); // ~10 FPS
+        // Repaint loop for coins view
+        ScheduledExecutorService coinRepaintExecutor = Executors.newSingleThreadScheduledExecutor();
+        coinRepaintExecutor.scheduleAtFixedRate(() -> {
+            SwingUtilities.invokeLater(() -> {
+                mainContainer.getCoinsView().repaint();
+            });
+        }, 0, 100, TimeUnit.MILLISECONDS); // ~10 FPS
 
         // Setup potion collision handling
         PotionCollisionHandler potionCollisionHandler = new PotionCollisionHandler(potionList, player, inventory);
         ScheduledExecutorService collisionExecutor = Executors.newSingleThreadScheduledExecutor();
         collisionExecutor.scheduleAtFixedRate(() -> {
             potionCollisionHandler.checkCollisions();
+        }, 0, 50, TimeUnit.MILLISECONDS); // Check 20x per second
+
+        // Setup coin collision handling
+        CoinCollisionHandler coinCollisionHandler = new CoinCollisionHandler(coins, player);
+        ScheduledExecutorService coinCollisionExecutor = Executors.newSingleThreadScheduledExecutor();
+        coinCollisionExecutor.scheduleAtFixedRate(() -> {
+            coinCollisionHandler.checkCollisions();
         }, 0, 50, TimeUnit.MILLISECONDS); // Check 20x per second
 
         // Shutdown on window close
@@ -176,10 +202,13 @@ public class MainApp {
                 executor.shutdown();
                 potionExecutor.shutdown();
                 collisionExecutor.shutdown();
+                coinCollisionExecutor.shutdown(); // shutdown coin collision handler
+                coinRepaintExecutor.shutdown();   // shutdown coin view repainter
                 for (Enemy enemy : enemyList) {
                     enemy.cleanup();
                 }
             }
         });
+
     }
 }

@@ -17,10 +17,9 @@ public class Coins extends Item implements Collectible {
      * Creates a new coin item at specified coordinates.
      * @param x The x-coordinate position in the game world
      * @param y The y-coordinate position in the game world
-     * @param name The display name of the coin collection
      */
-    public Coins(int x, int y, String name) {
-        super(x, y, name);
+    public Coins(int x, int y) {
+        super(x, y, "Coin");
         this.x = x;
         this.y = y;
     }
