@@ -45,12 +45,13 @@ public class HUD extends JComponent implements GameStateObserver {
         g.drawString("Score: " + scoreCounter.getScore(), 10, 40);
 
         // Display potion counts
-        int y = 60;
-        for (Potion.PotionType type : Potion.PotionType.values()) {
-            int count = inventory.getPotionCount(type);
-            g.drawString(type.name() + " potions: " + count, 10, y);
-            y += 20;
-        }
+
+        int count = inventory.getPotionCount(Potion.PotionType.HEAL);
+        g.drawString(Potion.PotionType.HEAL.name() + " potions: " + count, 10, 60);
+        count = inventory.getPotionCount(Potion.PotionType.STRENGTH);
+        g.drawString(Potion.PotionType.STRENGTH.name() + " potions: " + count, 10, 80);
+
+
     }
 
     @Override

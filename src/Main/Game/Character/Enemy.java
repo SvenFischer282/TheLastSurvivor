@@ -38,7 +38,15 @@ public class Enemy extends Character {
             logger.info("Enemy died");
         }
     }
-
+    public boolean isAlive() {
+        return getHealth() > 0;
+    }
+    public boolean isDead(){
+        if (getHealth() <= 0) {
+            return true;
+        }
+        return false;
+    }
     @Override
     public void update(float deltaTime, Player player) {
         moveToPlayer(player, deltaTime);

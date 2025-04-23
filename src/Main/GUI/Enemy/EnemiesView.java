@@ -20,16 +20,17 @@ public class EnemiesView extends JComponent {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        for (Enemy enemy : enemies) {
-            if (enemy.getHealth() <= 0) continue;
+        enemies.stream()
+                .filter(Enemy::isAlive)
+                .forEach(enemy -> {
+                    int x = (int) enemy.getX();
+                    int y = (int) enemy.getY();
+                    g.setColor(enemy.getColor());
+                    g.fillRect(x - 16, y - 16, 32, 32);
+                    g.setColor(Color.WHITE);
+                    g.drawString("Health: " + enemy.getHealth(), x - 20, y - 20);
+                });
 
-            int x = (int) enemy.getX();
-            int y = (int) enemy.getY();
-            g.setColor(enemy.getColor());
-            g.fillRect(x - 16, y - 16, 32, 32);
-            g.setColor(Color.WHITE);
-            g.drawString("Health: " + enemy.getHealth(), x - 20, y - 20);
-        }
     }
 
     @Override

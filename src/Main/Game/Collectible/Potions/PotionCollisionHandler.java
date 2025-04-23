@@ -19,7 +19,6 @@ public class PotionCollisionHandler {
     }
 
     public void checkCollisions() {
-        // Replace with actual width/height of player if available
         int playerWidth = 64;
         int playerHeight = 64;
 
@@ -30,15 +29,14 @@ public class PotionCollisionHandler {
                 playerHeight
         );
 
-        Iterator<Potion> iterator = potions.iterator();
-        while (iterator.hasNext()) {
-            Potion potion = iterator.next();
+        potions.removeIf(potion -> {
             Rectangle potionBounds = new Rectangle(potion.getX(), potion.getY(), 16, 16);
-
             if (playerBounds.intersects(potionBounds)) {
                 inventory.addPotion(potion);
-                iterator.remove(); // remove potion from visible list
+                return true;
             }
-        }
+            return false;
+        });
     }
+
 }
