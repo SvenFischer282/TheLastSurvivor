@@ -31,6 +31,16 @@ public class PotionSpawner {
             potions.add(strength);
         }
     }
+    public void spawnRandomPotion(int amount) {
+        Random random = new Random();
+        for (int i = 0; i < amount; i++) {
+            if(random.nextBoolean()) {
+                spawnHealPotion(1);
+            }else {
+                spawnStrengthPotion(1);
+            }
+        }
+    }
     public List<Potion> getPotions() {
         return potions;
     }

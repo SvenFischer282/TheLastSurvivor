@@ -53,7 +53,6 @@ public class MainApp {
 
         player.setPositionX(600);
         player.setPositionY(500);
-
         List<Coins> coins = coinSpawner.getCoins();
 
         // Main container with game components
@@ -129,7 +128,7 @@ public class MainApp {
                         waveNumber[0]++;
                         enemiesToSpawn[0] += 2;
                         logger.info("Spawning Wave {} with {} enemies", waveNumber[0], enemiesToSpawn[0]);
-
+                        potionSpawner.spawnRandomPotion(1);
                         // Clear existing enemies and spawn new ones
                         enemyList.clear();
                         enemySpawner.spawnRandomEnemies(enemiesToSpawn[0]);
