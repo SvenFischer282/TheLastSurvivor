@@ -7,11 +7,14 @@ import Main.Utils.RandomBorderCoordinates;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Spawns enemies at random border coordinates, ensuring they do not overlap with each other.
  */
 public class EnemySpawner {
+    private static final Logger logger = LoggerFactory.getLogger(EnemySpawner.class);
     private final List<Enemy> enemies = new ArrayList<>();
     private final BasicEnemyFactory basicEnemyFactory;
     private final FastZombieFactory fastZombieFactory;
@@ -19,9 +22,11 @@ public class EnemySpawner {
     private static final float MIN_SPAWN_DISTANCE = 64.0f; // Minimum distance between enemies (based on enemy size)
     private static final int MAX_SPAWN_ATTEMPTS = 10; // Maximum attempts to find a non-overlapping position
     private final Random random = new Random();
-    enum enemyVariants{
-        BASIC,FAST_ZOMBIE,
+
+    enum EnemyVariants {
+        BASIC, FAST_ZOMBIE
     }
+
     public EnemySpawner(CoinSpawner coinSpawner) {
         this.basicEnemyFactory = new BasicEnemyFactory();
         this.fastZombieFactory = new FastZombieFactory();
@@ -52,8 +57,7 @@ public class EnemySpawner {
             }
 
             if (!spawned) {
-                // Log a warning or handle failure (e.g., skip this enemy)
-                System.err.println("Failed to spawn basic enemy after " + MAX_SPAWN_ATTEMPTS + " attempts");
+                logger.warn("Failed to spawn basic enemy after {} attempts", MAX_SPAWN_ATTEMPTS);
             }
         }
     }
@@ -82,8 +86,7 @@ public class EnemySpawner {
             }
 
             if (!spawned) {
-                // Log a warning or handle failure (e.g., skip this enemy)
-                System.err.println("Failed to spawn fast zombie after " + MAX_SPAWN_ATTEMPTS + " attempts");
+                logger.warn("Failed to spawn fast zombie after {} attempts", MAX_SPAWN_ATTEMPTS);
             }
         }
     }
@@ -114,29 +117,43 @@ public class EnemySpawner {
     public List<Enemy> getEnemies() {
         return enemies;
     }
+
+    /**
+     * Spawns a random mix of basic enemies and fast zombies.
+     * @param amount Number of enemies to spawn.
+     */
     public void spawnRandomEnemies(int amount) {
-        enemyVariants[] variants = enemyVariants.values();
+        EnemyVariants[] variants = EnemyVariants.values();
         for (int i = 0; i < amount; i++) {
-            enemyVariants variant  = variants[random.nextInt(enemyVariants.values().length)];
-            if (variant == enemyVariants.BASIC){
+            EnemyVariants variant = variants[random.nextInt(variants.length)];
+            if (variant == EnemyVariants.BASIC) {
                 spawnBasicEnemies(1);
-            } else if (variant == enemyVariants.FAST_ZOMBIE) {
+            } else if (variant == EnemyVariants.FAST_ZOMBIE) {
                 spawnFastZombies(1);
             }
         }
-
     }
 
     /**
-     * Removes enemies with zero or less health from the list.
+     * Removes enemies with zero or less health from the list and spawns a coin at their position.
      */
     public void removeDeadEnemies() {
-        for (Enemy enemy : enemies) {
+        enemies.removeIf(enemy -> {
             if (enemy.getHealth() <= 0) {
-                coinSpawner.spawnGoldCoin((int)enemy.getX(),(int)enemy.getY());
+                // Randomly choose between GoldCoin and SilverCoin
+                int x = (int) enemy.getX();
+                int y = (int) enemy.getY();
+                if (random.nextBoolean()) {
+                    coinSpawner.spawnGoldCoin(x, y);
+                    logger.debug("Spawned GoldCoin at ({}, {}) for dead enemy", x, y);
+                } else {
+                    coinSpawner.spawnSilverCoin(x, y);
+                    logger.debug("Spawned SilverCoin at ({}, {}) for dead enemy", x, y);
+                }
                 enemy.cleanup();
+                return true;
             }
-        }
-        enemies.removeIf(enemy -> enemy.getHealth() <= 0);
+            return false;
+        });
     }
 }

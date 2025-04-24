@@ -8,8 +8,6 @@ import Main.Game.Character.Player;
 import Main.Game.Collectible.Coins.CoinCollisionHandler;
 import Main.Game.Collectible.Coins.CoinFactory.CoinSpawner;
 import Main.Game.Collectible.Coins.Coins;
-import Main.Game.Collectible.Coins.GoldCoin;
-import Main.Game.Collectible.Coins.SilverCoin;
 import Main.Game.Collectible.Potions.HealPotion;
 import Main.Game.Collectible.Potions.Potion;
 import Main.Game.Collectible.Potions.PotionFactory.PotionSpawner;
@@ -44,30 +42,19 @@ public class MainApp {
         EnemySpawner enemySpawner = new EnemySpawner(coinSpawner);
         PotionSpawner potionSpawner = new PotionSpawner();
 
-
-        coinSpawner.spawnGoldCoin(100,20);
-        coinSpawner.spawnGoldCoin(200,20);
-        coinSpawner.spawnGoldCoin(300,20);
-        coinSpawner.spawnGoldCoin(400,20);
-
         potionSpawner.spawnStrengthPotion(1);
         potionSpawner.spawnHealPotion(1);
         List<Potion> potionList = potionSpawner.getPotions();
 
         // Initialize enemies for the first wave
         enemySpawner.spawnRandomEnemies(3);
-        List<Enemy> enemyList = enemySpawner.getEnemies();
+        List<Enemy> enemyList = new ArrayList<>(enemySpawner.getEnemies()); // Copy to avoid direct reference
         logger.debug("Initial wave spawned with {} enemies", enemyList.size());
 
         player.setPositionX(600);
         player.setPositionY(500);
 
-
         List<Coins> coins = coinSpawner.getCoins();
-        GoldCoin goldCoin = new GoldCoin(200, 100);
-        coins.add(goldCoin);
-        SilverCoin silverCoin = new SilverCoin(300, 100);
-        coins.add(silverCoin);
 
         // Main container with game components
         MainContainer mainContainer = new MainContainer(player, enemyList, inventory, potionList, coins);
@@ -110,12 +97,11 @@ public class MainApp {
             float deltaTime = Math.min((currentTime - lastTime[0]) / 1_000_000_000.0f, 0.1f);
             lastTime[0] = currentTime;
 
-            synchronized (player) {
+            synchronized (enemyList) { // Synchronize on enemyList for thread safety
                 // Check if player is dead
                 if (player.getHealth() <= 0) {
                     // Stop all game loops
                     executor.shutdown();
-
 
                     // Clean up enemies
                     for (Enemy enemy : enemyList) {
@@ -130,9 +116,10 @@ public class MainApp {
                     });
                     return; // Exit the game loop
                 }
+
                 playerController.update(deltaTime);
                 enemiesController.updateAll(deltaTime);
-                enemySpawner.removeDeadEnemies();
+                enemySpawner.removeDeadEnemies(); // Remove dead enemies and spawn coins immediately
 
                 // Handle wave transition delay
                 if (waveTransition[0]) {
@@ -143,25 +130,18 @@ public class MainApp {
                         enemiesToSpawn[0] += 2;
                         logger.info("Spawning Wave {} with {} enemies", waveNumber[0], enemiesToSpawn[0]);
 
-                        // Spawn new enemies
+                        // Clear existing enemies and spawn new ones
+                        enemyList.clear();
                         enemySpawner.spawnRandomEnemies(enemiesToSpawn[0]);
-                        List<Enemy> newEnemies = enemySpawner.getEnemies();
-                        if (newEnemies.isEmpty()) {
-                            logger.error("EnemySpawner returnesd empty list for Wave {}", waveNumber[0]);
-                        } else {
-                            enemyList.addAll(newEnemies);
-                            logger.debug("Spawned {} new enemies for Wave {}", newEnemies.size(), waveNumber[0]);
-                        }
+                        enemyList.addAll(enemySpawner.getEnemies());
+                        logger.debug("Spawned {} new enemies for Wave {}", enemyList.size(), waveNumber[0]);
                         mainContainer.getEnemiesView().repaint();
                     }
                 } else {
                     // Check if all enemies are dead
-                    boolean allEnemiesDead = enemyList.stream().allMatch(enemy -> enemy.getHealth() <= 0);
-                    if (allEnemiesDead && !enemyList.isEmpty()) {
-                        // Clear dead enemies and start transition
-
-                        enemyList.clear();
-                        logger.debug("Cleared dead enemies for wave {}", waveNumber[0]);
+                    if (enemyList.isEmpty()) {
+                        // Start wave transition
+                        logger.debug("All enemies dead for wave {}", waveNumber[0]);
                         logger.info("Initiating transition for Wave {}", waveNumber[0] + 1);
                         waveTransition[0] = true;
                         waveTransitionStart[0] = currentTime;
@@ -173,6 +153,7 @@ public class MainApp {
             SwingUtilities.invokeLater(() -> {
                 mainContainer.getPlayerGunView().repaint();
                 mainContainer.getEnemiesView().repaint();
+                mainContainer.getCoinsView().repaint(); // Ensure coins are repainted
             });
         }, 0, 16, TimeUnit.MILLISECONDS); // ~60 FPS
 
@@ -183,6 +164,7 @@ public class MainApp {
                 mainContainer.getPotionsView().repaint();
             });
         }, 0, 100, TimeUnit.MILLISECONDS); // ~10 FPS
+
         // Repaint loop for coins view
         ScheduledExecutorService coinRepaintExecutor = Executors.newSingleThreadScheduledExecutor();
         coinRepaintExecutor.scheduleAtFixedRate(() -> {
@@ -219,6 +201,5 @@ public class MainApp {
                 }
             }
         });
-
     }
 }

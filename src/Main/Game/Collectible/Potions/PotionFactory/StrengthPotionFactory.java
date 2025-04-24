@@ -10,8 +10,8 @@ import java.util.Scanner;
 
 public class StrengthPotionFactory implements PotionFactory {
     Random random = new Random();
-    int MAP_WIDTH = 1000;
-    int MAP_HEIGHT = 750;
+    int MAP_WIDTH = 800;
+    int MAP_HEIGHT = 550;
     int level;
     public StrengthPotionFactory(int level) {
         this.level = level;
