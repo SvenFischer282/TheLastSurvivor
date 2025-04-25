@@ -123,4 +123,56 @@ public class Gun extends Weapon {
     public boolean canShoot() {
         return canShoot;
     }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public float getDx() {
+        return dx;
+    }
+
+    public float getDy() {
+        return dy;
+    }
+
+    public void setBulletActive(boolean b) {
+        bulletActive = b;
+    }
+
+    public void setDx(int i) {
+        dx = i;
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public boolean isCanShoot() {
+        return canShoot;
+    }
+
+    public void setCanShoot(boolean canShoot) {
+        this.canShoot = canShoot;
+    }
+
+    public void setBulletPosX(float bulletPosX) {
+        this.bulletPosX = bulletPosX;
+    }
+
+    public void setBulletPosY(float bulletPosY) {
+        this.bulletPosY = bulletPosY;
+    }
+
+    public void setDx(float dx) {
+        this.dx = dx;
+    }
+
+    public void setDy(float dy) {
+        this.dy = dy;
+    }
 }

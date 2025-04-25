@@ -60,7 +60,6 @@ public class Potion extends Item implements Collectible {
         return "This potion is used for brewing potions. It does not have any effects on its own";
     }
 
-    // Basic property accessors
     public int getEffectStrength() { return effectStrength; }
     public void setEffectStrength(int effectStrength) { this.effectStrength = effectStrength; }
     public PotionType getType() { return this.type; }

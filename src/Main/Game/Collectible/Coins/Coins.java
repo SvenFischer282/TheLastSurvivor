@@ -9,7 +9,7 @@ import Main.Game.Collectible.Item;
  * Extends the base Item class and implements Collectible functionality.
  */
 public class Coins extends Item implements Collectible {
-    private int value;
+    private int value = 0;
     private int x;
     private int y;
 

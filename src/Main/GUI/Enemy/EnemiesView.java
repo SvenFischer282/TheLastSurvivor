@@ -30,7 +30,7 @@ public class EnemiesView extends JComponent {
                         g.setColor(enemy.getColor());
                         g.fillRect(x - 30, y - 30, 60, 60);
                         g.setColor(Color.WHITE);
-                        g.drawString("Health: " + enemy.getHealth(), x - 25, y - 25);
+                        g.drawString("Health: " + enemy.getHealth(), x - 30, y - 30);
                     } else {
                         int x = (int) enemy.getX();
                         int y = (int) enemy.getY();

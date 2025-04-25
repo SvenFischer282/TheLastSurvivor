@@ -42,9 +42,14 @@ public class MainApp {
         EnemySpawner enemySpawner = new EnemySpawner(coinSpawner);
         PotionSpawner potionSpawner = new PotionSpawner();
 
-        potionSpawner.spawnStrengthPotion(1);
-        potionSpawner.spawnHealPotion(1);
+//        potionSpawner.spawnStrengthPotion(1);
+//        potionSpawner.spawnHealPotion(1);
+        Potion potion = new Potion(10,10,1);
+        inventory.addPotion(potion);
         List<Potion> potionList = potionSpawner.getPotions();
+
+
+        inventory.showInventory();
 
         // Initialize enemies for the first wave
         enemySpawner.spawnRandomEnemies(3);

@@ -16,9 +16,12 @@ public class CoinSpawner {
         this.goldCoinFactory = new GoldCoinFactory();
         this.silverCoinFactory = new SilverCoinFactory();
     }
+
     public void spawnGoldCoin(int x, int y) {
+
         coins.add(new GoldCoin(x, y));
     }
+
     public void spawnSilverCoin(int x, int y) {
         coins.add(new SilverCoin(x, y));
     }

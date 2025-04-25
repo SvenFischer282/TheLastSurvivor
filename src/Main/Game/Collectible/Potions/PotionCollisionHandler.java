@@ -39,4 +39,15 @@ public class PotionCollisionHandler {
         });
     }
 
+   public List<Potion> getPotions() {
+        return potions;
+   }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
 }
