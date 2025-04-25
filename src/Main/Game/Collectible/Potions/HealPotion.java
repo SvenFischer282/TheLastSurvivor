@@ -2,6 +2,7 @@ package Main.Game.Collectible.Potions;
 
 import Main.Game.Character.Player;
 import Main.Game.Collectible.Collectible;
+import Main.Utils.Exceptions.NegativeValueException;
 
 /**
  * A healing potion that restores player health when used.
@@ -27,8 +28,13 @@ public class HealPotion extends Potion implements Collectible {
      */
     @Override
     public void use(Player player){
-        player.heal(this.getEffectStrength());
-        System.out.println("Healed " + this.getEffectStrength());
+        try  {
+            player.heal(this.getEffectStrength());
+            System.out.println("Healed " + this.getEffectStrength());
+        } catch (NegativeValueException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**

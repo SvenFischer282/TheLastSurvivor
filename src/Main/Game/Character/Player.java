@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import Main.Utils.Exceptions.GunNotReadyException;
+import Main.Utils.Exceptions.NegativeValueException;
 import Main.Utils.Observer.GameStateObserver;
 import Main.Utils.Observer.GameStateSubject;
 import org.slf4j.Logger;
@@ -31,6 +33,7 @@ public class Player extends Character implements GameStateSubject {
     private final ScoreCounter scoreCounter = ScoreCounter.getInstance();
     private final static Logger logger = LoggerFactory.getLogger(Player.class);
     private List<GameStateObserver> observers = new ArrayList<>();
+
 
 
     public enum Direction {
@@ -58,6 +61,11 @@ public class Player extends Character implements GameStateSubject {
         logger.info("Player was inicialized");
 
     }
+
+    public ScoreCounter getScoreCounter() {
+        return scoreCounter;
+    }
+
 
     @Override
     public void addObserver(GameStateObserver observer) {
@@ -107,10 +115,11 @@ public class Player extends Character implements GameStateSubject {
 
     }
 
-    public void heal(int value) {
+    public void heal(int value) throws NegativeValueException {
         if (value < 0) {
-            logger.warn("Cannot heal with negative value: " + value);
-            return;
+
+            throw new NegativeValueException("Cannot heal with negative value: " );
+
         }
         if (this.health + value > MAX_HEALTH) {
             this.health = MAX_HEALTH;
@@ -189,7 +198,7 @@ public class Player extends Character implements GameStateSubject {
             canShoot = true;
         }
 
-        public void shoot(int target_x, int target_y) {
+        public void shoot (int target_x, int target_y)  throws GunNotReadyException {
             if (canShoot) {
                 canShoot = false;
 
@@ -207,7 +216,7 @@ public class Player extends Character implements GameStateSubject {
                 // Povolenie ďalšieho výstrelu po oneskorení
                 scheduler.schedule(() -> canShoot = true, 500, TimeUnit.MILLISECONDS);
             } else {
-                logger.warn("Gun can not shoot yet");
+                throw new GunNotReadyException("Gun isn't ready yet");
             }
         }
 

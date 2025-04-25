@@ -3,6 +3,7 @@ package Main.GUI.Player;
 import Main.Game.Character.Player;
 import Main.Game.Collectible.Potions.Potion;
 import Main.Game.Inventory;
+import Main.Utils.Exceptions.GunNotReadyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.EventRecordingLogger;
@@ -98,7 +99,11 @@ public class PlayerGunController implements KeyListener, MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (gun.canShoot()) {
-            gun.shoot(e.getX(), e.getY());
+            try {
+                gun.shoot(e.getX(), e.getY());
+            } catch (GunNotReadyException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

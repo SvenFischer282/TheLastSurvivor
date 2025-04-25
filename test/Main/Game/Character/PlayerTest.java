@@ -1,6 +1,8 @@
 package Main.Game.Character;
 
 import Main.Game.ScoreCounter;
+import Main.Utils.Exceptions.GunNotReadyException;
+import Main.Utils.Exceptions.NegativeValueException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,13 +40,29 @@ public class PlayerTest {
 
     @Test
     public void testHeal() {
-        player.takeDamage(5);
-        player.heal(3);
-        assertEquals(8, player.getHealth());
-        player.heal(5);
-        assertEquals(10, player.getHealth()); // Should not exceed MAX_HEALTH
-        player.heal(-1); // Should not change health
-        assertEquals(10, player.getHealth());
+        try {
+            // Test taking damage
+            player.takeDamage(5);
+            assertEquals(5, player.getHealth()); // Verify health after damage
+
+            // Test healing
+            player.heal(3);
+            assertEquals(8, player.getHealth()); // Verify health after healing
+
+            // Test healing to max
+            player.heal(5);
+            assertEquals(10, player.getHealth()); // Should not exceed MAX_HEALTH
+
+            // Test healing with negative value
+            player.heal(-1); // Should throw NegativeValueException
+            fail("Expected NegativeValueException for negative heal value");
+        } catch (NegativeValueException e) {
+            // Verify health remains unchanged after negative heal attempt
+            assertEquals(10, player.getHealth());
+            // Optionally verify the exception message
+            assertEquals("Cannot heal with negative value: ", e.getMessage());
+        }
+
     }
 
     @Test
@@ -90,7 +108,7 @@ public class PlayerTest {
     }
 
     @Test
-    public void testGunShoot() {
+    public void testGunShoot() throws GunNotReadyException {
         Player.Gun gun = player.getGun();
         gun.shoot(200, 200);
         assertFalse(gun.canShoot());
@@ -102,7 +120,7 @@ public class PlayerTest {
     }
 
     @Test
-    public void testGunUpdate() {
+    public void testGunUpdate() throws GunNotReadyException {
         Player.Gun gun = player.getGun();
         gun.shoot(200, 200);
         gun.update(0.1f);
@@ -120,7 +138,7 @@ public class PlayerTest {
     }
 
     @Test
-    public void testObserverNotification() {
+    public void testObserverNotification() throws NegativeValueException {
         class TestObserver implements Main.Utils.Observer.GameStateObserver {
             boolean updated = false;
             @Override

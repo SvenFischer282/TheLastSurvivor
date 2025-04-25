@@ -1,5 +1,6 @@
 package Main.Game.Character;
 
+import Main.Utils.Exceptions.GunNotReadyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -153,7 +154,7 @@ class EnemyTest {
     }
 
     @Test
-    void testHitByBullet() {
+    void testHitByBullet() throws GunNotReadyException {
         // Shoot a bullet close to the enemy
         player.getGun().shoot(0, 0); // Shoot towards enemy position
         Player.Gun.Bullet bullet = player.getGun().getBullets().get(0);
@@ -173,7 +174,7 @@ class EnemyTest {
     }
 
     @Test
-    void testHitByBulletMiss() {
+    void testHitByBulletMiss() throws GunNotReadyException {
         // Shoot a bullet far from the enemy
         player.getGun().shoot(1000, 1000); // Shoot far away
         Player.Gun.Bullet bullet = player.getGun().getBullets().get(0);

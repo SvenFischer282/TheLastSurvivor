@@ -1,6 +1,7 @@
 package Main.Game.Character.EnemyFactory;
 
 import Main.Game.Character.Enemy;
+import Main.Game.Character.Zombie.BigZombie;
 import Main.Game.Character.Zombie.FastZombie;
 import Main.Game.Collectible.Coins.CoinFactory.CoinSpawner;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,5 +55,13 @@ class EnemySpawnerTest {
         enemies.get(0).setHealth(0);
         spawner.removeDeadEnemies();
         assertEquals(1,spawner.getEnemies().size());
+    }
+
+    @Test
+    void spawnBigZombies() {
+        spawner.spawnBigZombies(2);
+        for (int i = 0; i < 2; i++) {
+            assertInstanceOf(BigZombie.class, spawner.getEnemies().get(i));
+        }
     }
 }
