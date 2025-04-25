@@ -258,6 +258,12 @@ public class Player extends Character implements GameStateSubject {
                 return bulletPosY;
             }
 
+            public void setBulletPosX(float bulletPosX) {
+                this.bulletPosX = bulletPosX;
+            }
+            public void setBulletPosY(float bulletPosY) {
+                this.bulletPosY = bulletPosY;
+            }
             public boolean isBulletActive() {
                 return bulletActive;
             }

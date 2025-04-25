@@ -38,6 +38,15 @@ public class Enemy extends Character {
             logger.info("Enemy died");
         }
     }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    public List<Enemy> getAllEnemies() {
+        return allEnemies;
+    }
+
     public boolean isAlive() {
         return getHealth() > 0;
     }

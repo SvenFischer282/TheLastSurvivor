@@ -1,6 +1,7 @@
 package Main.GUI.Enemy;
 
 import Main.Game.Character.Enemy;
+import Main.Game.Character.Zombie.BigZombie;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,12 +24,21 @@ public class EnemiesView extends JComponent {
         enemies.stream()
                 .filter(Enemy::isAlive)
                 .forEach(enemy -> {
-                    int x = (int) enemy.getX();
-                    int y = (int) enemy.getY();
-                    g.setColor(enemy.getColor());
-                    g.fillRect(x - 16, y - 16, 32, 32);
-                    g.setColor(Color.WHITE);
-                    g.drawString("Health: " + enemy.getHealth(), x - 20, y - 20);
+                    if (enemy instanceof BigZombie) {
+                        int x = (int) enemy.getX();
+                        int y = (int) enemy.getY();
+                        g.setColor(enemy.getColor());
+                        g.fillRect(x - 30, y - 30, 60, 60);
+                        g.setColor(Color.WHITE);
+                        g.drawString("Health: " + enemy.getHealth(), x - 25, y - 25);
+                    } else {
+                        int x = (int) enemy.getX();
+                        int y = (int) enemy.getY();
+                        g.setColor(enemy.getColor());
+                        g.fillRect(x - 16, y - 16, 32, 32);
+                        g.setColor(Color.WHITE);
+                        g.drawString("Health: " + enemy.getHealth(), x - 20, y - 20);
+                    }
                 });
 
     }
