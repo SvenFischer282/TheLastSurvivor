@@ -114,7 +114,7 @@ public class MainApp {
 
                     // Switch to game over screen
                     SwingUtilities.invokeLater(() -> {
-                        frame.setContentPane(new GameOverPanel(frame));
+                        frame.setContentPane(new GameOverPanel(frame,player));
                         frame.revalidate();
                         frame.repaint();
                     });

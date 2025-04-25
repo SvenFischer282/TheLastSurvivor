@@ -1,5 +1,7 @@
 package Main.GUI;
 
+import Main.Game.Character.Player;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,12 +11,15 @@ import java.awt.event.ActionListener;
  * A panel displayed when the player's health reaches 0, showing a "Game Over" message.
  */
 public class GameOverPanel extends JPanel {
-    public GameOverPanel(JFrame frame) {
+    public GameOverPanel(JFrame frame, Player player) {
         setLayout(new GridBagLayout());
         setBackground(Color.BLACK);
 
         // Game Over Label
         JLabel gameOverLabel = new JLabel("Game Over", SwingConstants.CENTER);
+        JLabel playerScoreLabel = new JLabel("Your score was: "+ player.getScoreCounter().getScore(), SwingConstants.CENTER);
+        playerScoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        playerScoreLabel.setForeground(Color.WHITE);
         gameOverLabel.setFont(new Font("Arial", Font.BOLD, 48));
         gameOverLabel.setForeground(Color.RED);
 
@@ -46,6 +51,7 @@ public class GameOverPanel extends JPanel {
         gbc.insets = new Insets(20, 0, 20, 0);
 
         add(gameOverLabel, gbc);
+        add(playerScoreLabel, gbc);
         add(restartButton, gbc);
         add(exitButton, gbc);
     }
