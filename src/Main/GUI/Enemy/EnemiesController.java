@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Controls a list of enemies, updating each one based on game logic.
+ * Manages a list of enemies, updating their states and handling their controllers.
  */
 public class EnemiesController {
     private static final Logger logger = LoggerFactory.getLogger(EnemiesController.class);
@@ -18,8 +18,13 @@ public class EnemiesController {
     private final List<EnemyController> controllers;
     private final Player player;
     private static final float MIN_DISTANCE = 20.0f; // Minimum distance between enemies
-    private static final float REPULSION_FORCE = 100.0f; // Strength of repulsion
+    private static final float REPULSION_FORCE = 100.0f; // Strength of repulsion force
 
+    /**
+     * Constructs an EnemiesController to manage enemy updates and interactions.
+     * @param enemies The list of enemies to control.
+     * @param player The player character for enemy interactions.
+     */
     public EnemiesController(List<Enemy> enemies, Player player) {
         this.enemies = enemies;
         this.controllers = new ArrayList<>();
@@ -32,12 +37,8 @@ public class EnemiesController {
     }
 
     /**
-     * Updates all enemies via their individual controllers.
-     * Removes dead enemies and their controllers.
-     * Adds controllers for new enemies.
-     * Applies repulsion to prevent enemies from overlapping.
-     *
-     * @param deltaTime Elapsed time since last update
+     * Updates all enemies, removes dead ones, adds controllers for new enemies, and applies repulsion.
+     * @param deltaTime Time elapsed since the last update.
      */
     public void updateAll(float deltaTime) {
         // Remove dead enemies and their controllers
@@ -64,7 +65,6 @@ public class EnemiesController {
             }
         }
 
-
         // Update all living enemies
         for (EnemyController controller : controllers) {
             if (controller.getEnemy().getHealth() > 0) {
@@ -73,6 +73,10 @@ public class EnemiesController {
         }
     }
 
+    /**
+     * Gets the list of managed enemies.
+     * @return The list of enemies.
+     */
     public List<Enemy> getEnemies() {
         return enemies;
     }

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Updates the Enemy model based on elapsed time and player
+ * Manages updates for a single enemy based on elapsed time and player interactions.
  */
 public class EnemyController {
     private static final Logger logger = LoggerFactory.getLogger(EnemyController.class);
@@ -14,8 +14,9 @@ public class EnemyController {
     private final Player player;
 
     /**
-     * @param enemy enemy which it controls
-     * @param player targeted player
+     * Constructs an EnemyController for a specific enemy and player.
+     * @param enemy The enemy to control.
+     * @param player The player targeted by the enemy.
      */
     public EnemyController(Enemy enemy, Player player) {
         this.enemy = enemy;
@@ -23,22 +24,20 @@ public class EnemyController {
     }
 
     /**
-     * Returns the enemy controlled by this controller.
-     *
-     * @return The Enemy instance
+     * Gets the enemy managed by this controller.
+     * @return The Enemy instance.
      */
     public Enemy getEnemy() {
         return enemy;
     }
 
     /**
-     * Updates the Enemy model based on elapsed time and player
-     * @param deltaTime elapsed time
+     * Updates the enemy's state based on elapsed time and player interaction.
+     * @param deltaTime Time elapsed since the last update.
      */
     public void update(float deltaTime) {
         float oldX = enemy.getX();
         float oldY = enemy.getY();
         enemy.update(deltaTime, player);
-
     }
 }

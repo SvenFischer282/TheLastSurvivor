@@ -25,6 +25,11 @@ public class SilverCoin extends Coins implements Collectible {
     public String getName() {
         return name;
     }
+
+    /**
+     * Get value of the coin
+     * @return value of the coin
+     */
     public int getValue() {
         return SILVER_COIN_VALUE;
     }

@@ -36,6 +36,11 @@ public class GoldCoin extends Coins implements Collectible {
         System.out.println("Gold coin collected");
         player.addScore(GOLD_COIN_VALUE);
     }
+
+    /**
+     * Handles getting th evalue of the coin
+     * @return value of the coin
+     */
     public int getValue(){
         return GOLD_COIN_VALUE;
     }

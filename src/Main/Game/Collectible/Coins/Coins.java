@@ -36,28 +36,49 @@ public class Coins extends Item implements Collectible {
         // player.addCoins(this.value);
     }
 
-    // Basic property accessors
 
+    /**
+     * Getter for value of the coin
+     * @return value of the coin
+     */
     public int getValue() {
         return value;
     }
 
+    /**
+     * sets value of the coin
+     * @param value new value of the coin
+     */
     public void setValue(int value) {
         this.value = value;
     }
 
+    /**
+     * gets X position
+     * @return X position of the coin
+     */
     public int getX() {
         return x;
     }
 
+    /**
+     * sets the X of the coin
+     * @param x new x position of the coin
+     */
     public void setX(int x) {
         this.x = x;
     }
-
+    /**
+     * gets Y position
+     * @return Y position of the coin
+     */
     public int getY() {
         return y;
     }
-
+    /**
+     * sets the Y of the coin
+     * @param y new Y position of the coin
+     */
     public void setY(int y) {
         this.y = y;
     }

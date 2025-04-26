@@ -26,7 +26,7 @@ public abstract class Item implements Collectible {
     }
 
     /**
-     * Default collection behavior (to be overridden by subclasses).
+     * Default collection behavior to be overridden by subclasses.
      * @param player The player collecting the item
      */
     @Override
@@ -35,21 +35,58 @@ public abstract class Item implements Collectible {
     }
 
     /**
-     * Default usage behavior (to be overridden by subclasses).
+     * Default usage behavior to be overridden by subclasses.
      * @param player The player using the item
      */
-
     public void use(Player player) {
         // Intentionally empty - subclasses should implement specific behavior
     }
 
-    // Position accessors
-    public int getX() { return x; }
-    public void setX(int x) { this.x = x; }
-    public int getY() { return y; }
-    public void setY(int y) { this.y = y; }
+    /**
+     * Gets the x-coordinate of the item.
+     * @return The x-coordinate
+     */
+    public int getX() {
+        return x;
+    }
 
-    // Name accessors
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    /**
+     * Sets the x-coordinate of the item.
+     * @param x The new x-coordinate
+     */
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    /**
+     * Gets the y-coordinate of the item.
+     * @return The y-coordinate
+     */
+    public int getY() {
+        return y;
+    }
+
+    /**
+     * Sets the y-coordinate of the item.
+     * @param y The new y-coordinate
+     */
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    /**
+     * Gets the name of the item.
+     * @return The item's name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of the item.
+     * @param name The new name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 }

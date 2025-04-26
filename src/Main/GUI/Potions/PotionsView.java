@@ -7,19 +7,26 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * A Swing component that renders a list of potions.
+ * A Swing component for rendering a list of potions in the game.
  */
 public class PotionsView extends JComponent {
     private final List<Potion> potions;
 
+    /**
+     * Constructs a PotionsView with a list of potions to render.
+     * @param potions The list of potions to display.
+     */
     public PotionsView(List<Potion> potions) {
         this.potions = potions;
     }
 
+    /**
+     * Renders each potion as a colored circle with a type label.
+     * @param g The Graphics object used for drawing.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
 
         for (Potion potion : potions) {
             int x = (int) potion.getX();
@@ -49,6 +56,10 @@ public class PotionsView extends JComponent {
         }
     }
 
+    /**
+     * Gets the preferred size of the component.
+     * @return A Dimension object with width 1200 and height 750.
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(1200, 750);

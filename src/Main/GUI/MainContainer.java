@@ -15,6 +15,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Main container for all game views (player, enemies, potions, coins, HUD).
+ */
 public class MainContainer extends JLayeredPane {
     private final PlayerGunView playerGunView;
     private final EnemiesView enemiesView;
@@ -23,6 +26,15 @@ public class MainContainer extends JLayeredPane {
     private final HUD hudView;
     private final ScoreCounter scoreCounter;
 
+    /**
+     * Creates the main container and initializes all views.
+     *
+     * @param player the player object
+     * @param enemies list of enemies
+     * @param inventory the player's inventory
+     * @param potions list of potions
+     * @param coins list of coins
+     */
     public MainContainer(Player player, List<Enemy> enemies, Inventory inventory, List<Potion> potions, List<Coins> coins) {
         playerGunView = new PlayerGunView(player);
         enemiesView = new EnemiesView(enemies);
@@ -31,7 +43,6 @@ public class MainContainer extends JLayeredPane {
 
         scoreCounter = ScoreCounter.getInstance();
         hudView  = new HUD(player,scoreCounter, inventory);
-
 
         playerGunView.setBounds(0, 0, 1200, 750);
         potionsView.setBounds(0, 0, 1200, 750);
@@ -49,23 +60,46 @@ public class MainContainer extends JLayeredPane {
         setPreferredSize(new Dimension(1200, 750));
     }
 
+    /**
+     * @return the player's gun view
+     */
     public PlayerGunView getPlayerGunView() {
         return playerGunView;
     }
 
+    /**
+     * @return the enemies view
+     */
     public EnemiesView getEnemiesView() {
         return enemiesView;
     }
+
+    /**
+     * @return the potions view
+     */
     public PotionsView getPotionsView() {
         return potionsView;
     }
+
+    /**
+     * @return the HUD view
+     */
     public HUD getHudView() {
         return hudView;
     }
-   public void addScore(int score) {
-        scoreCounter.addScore(score);
-   }
 
+    /**
+     * Adds score to the score counter.
+     *
+     * @param score the score to add
+     */
+    public void addScore(int score) {
+        scoreCounter.addScore(score);
+    }
+
+    /**
+     * @return the coins view
+     */
     public CoinsView getCoinsView() {
         return coinsView;
     }

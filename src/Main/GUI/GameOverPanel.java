@@ -8,16 +8,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * A panel displayed when the player's health reaches 0, showing a "Game Over" message.
+ * A panel displayed when the player's health reaches 0, showing a "Game Over" message and options to restart or exit.
  */
 public class GameOverPanel extends JPanel {
+    /**
+     * Constructs a GameOverPanel with options to restart the game or exit.
+     * @param frame The parent JFrame to be closed upon restart.
+     * @param player The player whose score is displayed.
+     */
     public GameOverPanel(JFrame frame, Player player) {
         setLayout(new GridBagLayout());
         setBackground(Color.BLACK);
 
         // Game Over Label
         JLabel gameOverLabel = new JLabel("Game Over", SwingConstants.CENTER);
-        JLabel playerScoreLabel = new JLabel("Your score was: "+ player.getScoreCounter().getScore(), SwingConstants.CENTER);
+        JLabel playerScoreLabel = new JLabel("Your score was: " + player.getScoreCounter().getScore(), SwingConstants.CENTER);
         playerScoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
         playerScoreLabel.setForeground(Color.WHITE);
         gameOverLabel.setFont(new Font("Arial", Font.BOLD, 48));
@@ -29,7 +34,6 @@ public class GameOverPanel extends JPanel {
         restartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Restart the game by restarting the MainApp
                 frame.dispose(); // Close the current window
                 MainApp.main(null); // Restart the game
             }
@@ -56,6 +60,10 @@ public class GameOverPanel extends JPanel {
         add(exitButton, gbc);
     }
 
+    /**
+     * Custom painting for the panel, currently just calls the superclass method.
+     * @param g The Graphics object used for drawing.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

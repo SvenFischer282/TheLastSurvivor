@@ -50,7 +50,7 @@ public class Player extends Character implements GameStateSubject {
      * @param y Initial y-coordinate
      */
     public Player(int x, int y) {
-        super(MAX_HEALTH, x, y, 2);
+        super(MAX_HEALTH, x, y, 10);
         this.health = super.getHealth();
         this.vx = 0;
         this.vy = 0;

@@ -2,7 +2,15 @@ package Main.Utils;
 
 import java.util.Random;
 
+/**
+ * Utility class for generating random coordinates along the borders of the game screen.
+ */
 public class RandomBorderCoordinates {
+
+    /**
+     * Generates a random coordinate on one of the four borders of the game screen.
+     * @return An array containing [x, y] coordinates on a random border.
+     */
     public static int[] getRandomBorderCoordinate() {
         Random random = new Random();
         int width = 1200;
@@ -25,5 +33,4 @@ public class RandomBorderCoordinates {
                 return new int[]{0, 0}; // Fallback, should not occur
         }
     }
-
 }

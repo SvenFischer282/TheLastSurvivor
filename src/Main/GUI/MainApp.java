@@ -26,12 +26,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The main application class that initializes and runs the game.
- * Sets up all game components, controllers, and the game loop with a wave system.
+ * The main application class that initializes and runs the game, managing components, controllers, and the game loop with a wave system.
  */
 public class MainApp {
     private static final Logger logger = LoggerFactory.getLogger(MainApp.class);
 
+    /**
+     * Entry point for the game application.
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         // Initialize player and inventory
         Player player = new Player(400, 300);
@@ -42,20 +45,19 @@ public class MainApp {
         EnemySpawner enemySpawner = new EnemySpawner(coinSpawner);
         PotionSpawner potionSpawner = new PotionSpawner();
 
-//        potionSpawner.spawnStrengthPotion(1);
-//        potionSpawner.spawnHealPotion(1);
-        Potion potion = new Potion(10,10,1);
+        // Add initial potion to inventory for testing
+        Potion potion = new Potion(10, 10, 1);
         inventory.addPotion(potion);
         List<Potion> potionList = potionSpawner.getPotions();
-
 
         inventory.showInventory();
 
         // Initialize enemies for the first wave
         enemySpawner.spawnRandomEnemies(3);
-        List<Enemy> enemyList = new ArrayList<>(enemySpawner.getEnemies()); // Copy to avoid direct reference
+        List<Enemy> enemyList = new ArrayList<>(enemySpawner.getEnemies());
         logger.debug("Initial wave spawned with {} enemies", enemyList.size());
 
+        // Set initial player position
         player.setPositionX(600);
         player.setPositionY(500);
         List<Coins> coins = coinSpawner.getCoins();
@@ -63,7 +65,7 @@ public class MainApp {
         // Main container with game components
         MainContainer mainContainer = new MainContainer(player, enemyList, inventory, potionList, coins);
 
-        // (Optional debug inventory additions)
+        // Add test potions to inventory
         Potion strength = new StrengthPotion(10, 10, 2);
         Potion heal = new HealPotion(10, 10, 2);
         inventory.addPotion(strength);
@@ -87,12 +89,12 @@ public class MainApp {
         EnemiesController enemiesController = new EnemiesController(enemyList, player);
 
         // Wave system variables
-        final int[] waveNumber = {1}; // Track current wave
-        final int[] enemiesToSpawn = {3}; // Number of enemies to spawn
-        final boolean[] waveTransition = {false}; // Track if in wave transition
-        final long[] waveTransitionStart = {0}; // Time when transition started
+        final int[] waveNumber = {1}; // Current wave
+        final int[] enemiesToSpawn = {3}; // Enemies per wave
+        final boolean[] waveTransition = {false}; // Wave transition state
+        final long[] waveTransitionStart = {0}; // Transition start time
 
-        // Setup game loop for player + enemies
+        // Setup game loop for player and enemies
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         final long[] lastTime = {System.nanoTime()};
 
@@ -101,63 +103,53 @@ public class MainApp {
             float deltaTime = Math.min((currentTime - lastTime[0]) / 1_000_000_000.0f, 0.1f);
             lastTime[0] = currentTime;
 
-            synchronized (enemyList) { // Synchronize on enemyList for thread safety
+            synchronized (enemyList) {
                 // Check if player is dead
                 if (player.getHealth() <= 0) {
-                    // Stop all game loops
                     executor.shutdown();
-
-                    // Clean up enemies
                     for (Enemy enemy : enemyList) {
                         enemy.cleanup();
                     }
-
-                    // Switch to game over screen
                     SwingUtilities.invokeLater(() -> {
-                        frame.setContentPane(new GameOverPanel(frame,player));
+                        frame.setContentPane(new GameOverPanel(frame, player));
                         frame.revalidate();
                         frame.repaint();
                     });
-                    return; // Exit the game loop
+                    return;
                 }
 
                 playerController.update(deltaTime);
                 enemiesController.updateAll(deltaTime);
-                enemySpawner.removeDeadEnemies(); // Remove dead enemies and spawn coins immediately
+                enemySpawner.removeDeadEnemies();
 
-                // Handle wave transition delay
+                // Handle wave transition
                 if (waveTransition[0]) {
-                    long elapsed = (currentTime - waveTransitionStart[0]) / 1_000_000; // Milliseconds
-                    if (elapsed >= 2000) { // 2-second delay
+                    long elapsed = (currentTime - waveTransitionStart[0]) / 1_000_000;
+                    if (elapsed >= 2000) {
                         waveTransition[0] = false;
                         waveNumber[0]++;
                         enemiesToSpawn[0] += 2;
                         logger.info("Spawning Wave {} with {} enemies", waveNumber[0], enemiesToSpawn[0]);
                         potionSpawner.spawnRandomPotion(1);
-                        // Clear existing enemies and spawn new ones
                         enemyList.clear();
                         enemySpawner.spawnRandomEnemies(enemiesToSpawn[0]);
                         enemyList.addAll(enemySpawner.getEnemies());
                         logger.debug("Spawned {} new enemies for Wave {}", enemyList.size(), waveNumber[0]);
                         mainContainer.getEnemiesView().repaint();
                     }
-                } else {
-                    // Check if all enemies are dead
-                    if (enemyList.isEmpty()) {
-                        // Start wave transition
-                        logger.debug("All enemies dead for wave {}", waveNumber[0]);
-                        logger.info("Initiating transition for Wave {}", waveNumber[0] + 1);
-                        waveTransition[0] = true;
-                        waveTransitionStart[0] = currentTime;
-                        mainContainer.getEnemiesView().repaint();
-                    }
+                } else if (enemyList.isEmpty()) {
+                    logger.debug("All enemies dead for wave {}", waveNumber[0]);
+                    logger.info("Initiating transition for Wave {}", waveNumber[0] + 1);
+                    waveTransition[0] = true;
+                    waveTransitionStart[0] = currentTime;
+                    mainContainer.getEnemiesView().repaint();
                 }
             }
 
             SwingUtilities.invokeLater(() -> {
                 mainContainer.getPlayerGunView().repaint();
                 mainContainer.getEnemiesView().repaint();
-                mainContainer.getCoinsView().repaint(); // Ensure coins are repainted
+                mainContainer.getCoinsView().repaint();
             });
         }, 0, 16, TimeUnit.MILLISECONDS); // ~60 FPS
 
