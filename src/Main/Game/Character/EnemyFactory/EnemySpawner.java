@@ -21,14 +21,21 @@ public class EnemySpawner {
     private final FastZombieFactory fastZombieFactory;
     private final BigZombieFactory bigZombieFactory;
     private final CoinSpawner coinSpawner;
-    private static final float MIN_SPAWN_DISTANCE = 64.0f; // Minimum distance between enemies (based on enemy size)
+    private static final float MIN_SPAWN_DISTANCE = 64.0f; // Minimum distance between enemies
     private static final int MAX_SPAWN_ATTEMPTS = 10; // Maximum attempts to find a non-overlapping position
     private final Random random = new Random();
 
+    /**
+     * Enum for different enemy variants.
+     */
     enum EnemyVariants {
-        BASIC, FAST_ZOMBIE,BIG_ZOMBIE
+        BASIC, FAST_ZOMBIE, BIG_ZOMBIE
     }
 
+    /**
+     * Constructs an EnemySpawner with a reference to a CoinSpawner.
+     * @param coinSpawner The CoinSpawner for spawning coins when enemies die.
+     */
     public EnemySpawner(CoinSpawner coinSpawner) {
         this.basicEnemyFactory = new BasicEnemyFactory();
         this.fastZombieFactory = new FastZombieFactory();
@@ -94,6 +101,10 @@ public class EnemySpawner {
         }
     }
 
+    /**
+     * Spawns big zombies, ensuring they don't overlap with existing enemies.
+     * @param amount Number of zombies to spawn.
+     */
     public void spawnBigZombies(int amount) {
         for (int i = 0; i < amount; i++) {
             boolean spawned = false;
@@ -120,7 +131,7 @@ public class EnemySpawner {
     }
 
     /**
-     * Checks if the given position is valid (i.e., doesn't overlap with existing enemies).
+     * Checks if the given position is valid (no overlap with existing enemies).
      * @param x X-coordinate of the proposed spawn position.
      * @param y Y-coordinate of the proposed spawn position.
      * @return True if the position is valid, false if it overlaps with an existing enemy.
@@ -132,10 +143,10 @@ public class EnemySpawner {
             float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
             if (distance < MIN_SPAWN_DISTANCE) {
-                return false; // Overlaps with an existing enemy
+                return false;
             }
         }
-        return true; // No overlaps
+        return true;
     }
 
     /**
@@ -147,7 +158,7 @@ public class EnemySpawner {
     }
 
     /**
-     * Spawns a random mix of basic enemies and fast zombies.
+     * Spawns a random mix of basic enemies, fast zombies, and big zombies.
      * @param amount Number of enemies to spawn.
      */
     public void spawnRandomEnemies(int amount) {
@@ -165,12 +176,11 @@ public class EnemySpawner {
     }
 
     /**
-     * Removes enemies with zero or less health from the list and spawns a coin at their position.
+     * Removes dead enemies and spawns a coin at their position.
      */
     public void removeDeadEnemies() {
         enemies.removeIf(enemy -> {
             if (enemy.getHealth() <= 0) {
-                // Randomly choose between GoldCoin and SilverCoin
                 int x = (int) enemy.getX();
                 int y = (int) enemy.getY();
                 if (random.nextBoolean()) {

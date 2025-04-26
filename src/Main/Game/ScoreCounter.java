@@ -82,18 +82,28 @@ public class ScoreCounter implements GameStateSubject {
         notifyObservers();
     }
 
+    /**
+     * Adds observer to the list of observers
+     * @param observer The observer to add
+     */
     @Override
     public void addObserver(GameStateObserver observer) {
         observers.add(observer);
     }
 
+    /**
+     * Removes the observer from the list of the observers
+     * @param observer The observer we want to remove
+     */
     @Override
     public void removeObserver(GameStateObserver observer) {
         observers.remove(observer);
     }
 
 
-
+    /**
+     * Updates all observers form list
+     */
     @Override
     public void notifyObservers() {
         SwingUtilities.invokeLater(() -> {

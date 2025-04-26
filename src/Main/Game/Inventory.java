@@ -33,16 +33,28 @@ public class Inventory implements GameStateSubject {
         this.player = player;
     }
 
+    /**
+     * Add observer to the list of observers
+     * @param observer observer we want to add
+     */
+
     @Override
     public void addObserver(GameStateObserver observer) {
         observers.add(observer);
     }
 
+    /**
+     * Remove the observer from list
+     * @param observer observer we want to remove
+     */
     @Override
     public void removeObserver(GameStateObserver observer) {
         observers.remove(observer);
     }
 
+    /**
+     * updates every observer in the list
+     */
     @Override
     public void notifyObservers() {
         for (GameStateObserver observer : observers) {

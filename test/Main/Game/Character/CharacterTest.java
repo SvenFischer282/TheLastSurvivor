@@ -1,5 +1,6 @@
 package Main.Game.Character;
 
+import Main.Utils.Exceptions.NegativeValueException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,13 +41,13 @@ class CharacterTest {
     }
 
     @Test
-    void testTakeDamage() {
+    void testTakeDamage() throws NegativeValueException {
         character.takeDamage(30);
         assertEquals(70, character.getHealth());
     }
 
     @Test
-    void testTakeDamageToZero() {
+    void testTakeDamageToZero() throws NegativeValueException {
         character.takeDamage(150);
         assertEquals(0, character.getHealth());
     }
@@ -70,7 +71,7 @@ class CharacterTest {
     }
 
     @Test
-    void testGetHealthAfterMultipleDamages() {
+    void testGetHealthAfterMultipleDamages() throws NegativeValueException {
         character.takeDamage(20);
         character.takeDamage(30);
         assertEquals(50, character.getHealth());

@@ -60,7 +60,7 @@ public class PlayerTest {
             // Verify health remains unchanged after negative heal attempt
             assertEquals(10, player.getHealth());
             // Optionally verify the exception message
-            assertEquals("Cannot heal with negative value: ", e.getMessage());
+            assertEquals("Cannot heal with negative value", e.getMessage());
         }
 
     }
