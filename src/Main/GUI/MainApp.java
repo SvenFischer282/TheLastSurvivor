@@ -74,18 +74,39 @@ public class MainApp {
         // Setup game window
         JFrame frame = new JFrame("The Last Survivor");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setContentPane(mainContainer);
         frame.setSize(1200, 750);
         frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
 
-        // Setup player controller
+        // Create StartPanel with button action
+        StartPanel startPanel = new StartPanel(e -> {
+            frame.setContentPane(mainContainer);
+            frame.revalidate();
+            frame.repaint();
+
+            // Setup controllers when the game actually starts
+            setupControllers(mainContainer, player, inventory, enemyList, enemySpawner, potionSpawner, potionList, coins, frame);
+        });
+
+        frame.setContentPane(startPanel);
+        frame.setVisible(true);
+    }
+
+    private static void setupControllers(
+            MainContainer mainContainer,
+            Player player,
+            Inventory inventory,
+            List<Enemy> enemyList,
+            EnemySpawner enemySpawner,
+            PotionSpawner potionSpawner,
+            List<Potion> potionList,
+            List<Coins> coins,
+            JFrame frame
+    ) {
         PlayerGunController playerController = new PlayerGunController(player, inventory);
         mainContainer.getPlayerGunView().addKeyListener(playerController);
         mainContainer.getPlayerGunView().addMouseListener(playerController);
         mainContainer.getPlayerGunView().requestFocusInWindow();
 
-        // Setup enemies controller
         EnemiesController enemiesController = new EnemiesController(enemyList, player);
 
         // Wave system variables
