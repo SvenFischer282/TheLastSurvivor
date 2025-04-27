@@ -14,7 +14,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="SK"/>
     <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk/23.0.2/libexec/openjdk.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/svenfischer/IdeaProjects/LastSurvivor/target/surefire/surefirebooter-20250427182501330_3.jar /Users/svenfischer/IdeaProjects/LastSurvivor/target/surefire 2025-04-27T18-25-01_263-jvmRun1 surefire-20250427182501330_1tmp surefire_0-20250427182501330_2tmp"/>
+    <property name="sun.java.command" value="/Users/svenfischer/IdeaProjects/LastSurvivor/target/surefire/surefirebooter-20250427182632732_3.jar /Users/svenfischer/IdeaProjects/LastSurvivor/target/surefire 2025-04-27T18-26-32_667-jvmRun1 surefire-20250427182632732_1tmp surefire_0-20250427182632732_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/svenfischer/IdeaProjects/LastSurvivor/target/test-classes:/Users/svenfischer/IdeaProjects/LastSurvivor/target/classes:/Users/svenfischer/.m2/repository/org/slf4j/slf4j-api/2.0.7/slf4j-api-2.0.7.jar:/Users/svenfischer/.m2/repository/org/apache/logging/log4j/log4j-slf4j2-impl/2.20.0/log4j-slf4j2-impl-2.20.0.jar:/Users/svenfischer/.m2/repository/org/apache/logging/log4j/log4j-api/2.20.0/log4j-api-2.20.0.jar:/Users/svenfischer/.m2/repository/org/apache/logging/log4j/log4j-core/2.20.0/log4j-core-2.20.0.jar:/Users/svenfischer/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.1/junit-jupiter-api-5.9.1.jar:/Users/svenfischer/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/svenfischer/.m2/repository/org/junit/platform/junit-platform-commons/1.9.1/junit-platform-commons-1.9.1.jar:/Users/svenfischer/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/svenfischer/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.1/junit-jupiter-params-5.9.1.jar:"/>
@@ -31,7 +31,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/svenfischer/IdeaProjects/LastSurvivor/target/surefire/surefirebooter-20250427182501330_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/svenfischer/IdeaProjects/LastSurvivor/target/surefire/surefirebooter-20250427182632732_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="23.0.2"/>
@@ -61,13 +61,13 @@
     <property name="java.class.version" value="67.0"/>
   </properties>
   <testcase name="use" classname="Main.Game.Collectible.Potions.HealPotionTest" time="0.002">
-    <system-out><![CDATA[18:25:09.907 [main] INFO  Main.Game.Character.Player - Player was inicialized
-18:25:09.907 [main] INFO  Main.Game.Character.Player - Player was healed to max health: 10
+    <system-out><![CDATA[18:26:41.196 [main] INFO  Main.Game.Character.Player - Player was inicialized
+18:26:41.196 [main] INFO  Main.Game.Character.Player - Player was healed to max health: 10
 Healed 1
 ]]></system-out>
   </testcase>
   <testcase name="getDescription" classname="Main.Game.Collectible.Potions.HealPotionTest" time="0.001">
-    <system-out><![CDATA[18:25:09.909 [main] INFO  Main.Game.Character.Player - Player was inicialized
+    <system-out><![CDATA[18:26:41.198 [main] INFO  Main.Game.Character.Player - Player was inicialized
 ]]></system-out>
   </testcase>
 </testsuite>
