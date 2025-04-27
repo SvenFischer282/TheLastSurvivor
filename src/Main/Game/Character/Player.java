@@ -137,7 +137,7 @@ public class Player extends Character implements GameStateSubject {
      */
     public void heal(int value) throws NegativeValueException {
         if (value < 0) {
-            throw new NegativeValueException("Cannot heal with negative value: ");
+            throw new NegativeValueException("Cannot heal with negative value");
         }
         if (this.health + value > MAX_HEALTH) {
             this.health = MAX_HEALTH;
