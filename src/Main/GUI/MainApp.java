@@ -14,6 +14,7 @@ import Main.Game.Collectible.Potions.PotionFactory.PotionSpawner;
 import Main.Game.Collectible.Potions.StrengthPotion;
 import Main.Game.Inventory;
 import Main.Game.Collectible.Potions.PotionCollisionHandler;
+import Main.Game.ScoreCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +45,7 @@ public class MainApp {
         CoinSpawner coinSpawner = new CoinSpawner();
         EnemySpawner enemySpawner = new EnemySpawner(coinSpawner);
         PotionSpawner potionSpawner = new PotionSpawner();
+        ScoreCounter scoreCounter = ScoreCounter.getInstance();
 
         // Add initial potion to inventory for testing
         Potion potion = new Potion(10, 10, 1);
@@ -82,7 +84,7 @@ public class MainApp {
             frame.setContentPane(mainContainer);
             frame.revalidate();
             frame.repaint();
-
+            scoreCounter.setScore(0);
             // Setup controllers when the game actually starts
             setupControllers(mainContainer, player, inventory, enemyList, enemySpawner, potionSpawner, potionList, coins, frame);
         });

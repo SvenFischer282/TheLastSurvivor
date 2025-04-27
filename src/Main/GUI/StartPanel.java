@@ -17,7 +17,7 @@ public class StartPanel extends JPanel {
         titleLabel.setForeground(Color.RED);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 48));
 
-        JLabel authorLabel = new JLabel("Created Sven Fischer", SwingConstants.CENTER);
+        JLabel authorLabel = new JLabel("Created by Sven Fischer", SwingConstants.CENTER);
         authorLabel.setForeground(Color.LIGHT_GRAY);
         authorLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
