@@ -35,8 +35,8 @@ Java-based 2D action game using Swing GUI framework
   - Long-range shooting with mouse targeting
   - Close-combat sword attacks with spacebar
 - **Item Collection**:
-  - Healing potions (key 1)
-  - Strength potions (key 2)
+  - Healing potions (key 1) - restores health
+  - Strength potions (key 2) - temporarily increases damage for 5 seconds
   - Coins (gold and silver) for scoring
 - **Score System**: Based on coin collection from defeated enemies
 - **Inventory Management**: Simple potion tracking and health display
@@ -44,9 +44,9 @@ Java-based 2D action game using Swing GUI framework
 
 ### Enemy Types
 
-- **Standard Zombies**: Basic enemies that attack in groups
-- **Slow Zombies**: Higher resistance and more health points
-- **Fast Zombies**: Faster movement but fewer health points
+- **Basic Enemies**: Standard enemies with 4 health, 1 damage, and 100 speed
+- **Big Zombies**: High health (10 HP) and damage (4), but slow movement (50 speed)
+- **Fast Zombies**: Low health (2 HP) but very fast movement (150 speed) and moderate damage (2)
 
 ### Visual Elements
 
@@ -66,8 +66,8 @@ Java-based 2D action game using Swing GUI framework
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd LastSurvivor
+git clone https://github.com/SvenFischer282/TheLastSurvivor.git
+cd TheLastSurvivor
 
 # Compile the project
 mvn clean compile
@@ -94,7 +94,7 @@ java -jar target/Last_Survivor-1.0-SNAPSHOT.jar
 - **Mouse**: Aim and shoot projectiles
 - **Spacebar**: Sword attack (close combat)
 - **1**: Use healing potion
-- **2**: Use strength potion
+- **2** (or **Numpad 2**): Use strength potion
 
 ### Gameplay Tips
 
@@ -209,8 +209,8 @@ Weapon (Abstract)
 
 ```
 src/
-├── Main/
-│   ├── Game/                    # Core game logic
+├── Main/                       # Main package (not src/Main)
+│   ├── Game/                   # Core game logic
 │   │   ├── Character/          # Player and enemy classes
 │   │   ├── Collectible/        # Items and collectibles
 │   │   ├── Weapons/            # Weapon implementations
