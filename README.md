@@ -1,90 +1,316 @@
-# Projekt: Last Survivor
+# Last Survivor - Game Documentation
 
-## 1. Meno a priezvisko
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Game Features](#game-features)
+3. [Installation & Setup](#installation--setup)
+4. [How to Play](#how-to-play)
+5. [Game Architecture](#game-architecture)
+6. [Class Hierarchy](#class-hierarchy)
+7. [OOP Principles Implementation](#oop-principles-implementation)
+8. [Design Patterns](#design-patterns)
+9. [Project Structure](#project-structure)
+10. [Development](#development)
+11. [Testing](#testing)
+
+## Project Overview
+
+**Last Survivor** is an action-packed survival game where players control a character navigating through waves of zombies. The primary objective is to survive as long as possible by defeating enemies, collecting coins to increase score, and utilizing various power-ups to enhance survival chances.
+
+### Developer
+
 **Sven Fischer**
 
-## 2. Názov projektu
-**Last Survivor**
+### Project Type
 
-## 3. Zámer projektu
-Hra *Last Survivor* je akčná hra, kde hráč ovláda postavu pohybujúcu sa po obrazovke plnej vĺn zombie. Hlavným cieľom je prežiť čo najdlhšie, porážať nepriateľov a zbierať mince, ktoré zvyšujú skóre. Hráč využíva klávesy **WASD** na pohyb, myš na streľbu projektilov, **medzerník** na boj mečom a zbiera potiony (napr. na liečenie alebo posilnenie), aby zvýšil svoje šance na prežitie. Zombie neustále prenasledujú hráča a pri kontakte mu uberajú životy, čo ho núti naplno využiť svoje schopnosti.
+Java-based 2D action game using Swing GUI framework
 
-### Hlavné mechaniky hry
-- **Plynulý pohyb**: Ovládanie postavy pomocou WASD.
-- **Boj**: Streľba na diaľku (myš) a útok mečom na blízko (medzerník).
-- **Zber predmetov**: Potiony (liečenie, sila) ovládané klávesami 1 a 2.
-- **Systém skóre**: Založený na zbieraní mincí od porazených nepriateľov.
-- **Inventár**: Jednoduchý prehľad potionov a ukazovateľ zostávajúcich životov.
-- **Rozmanitosť nepriateľov**:
-   - **Štandardní zombie**: Útočia v skupinách.
-   - **Pomalí zombie**: Vyššia odolnosť a viac životov.
-   - **Rýchli zombie**: Rýchlejší, no s menej životmi.
+## Game Features
 
-## 4. Diagram hierarchie tried (dedenia)
-![Hierarchia tried](img.png)
+### Core Gameplay Mechanics
 
-## 5. Zhodnotenie OOP princípov
+- **Smooth Movement**: WASD key controls for character movement
+- **Combat System**:
+  - Long-range shooting with mouse targeting
+  - Close-combat sword attacks with spacebar
+- **Item Collection**:
+  - Healing potions (key 1)
+  - Strength potions (key 2)
+  - Coins (gold and silver) for scoring
+- **Score System**: Based on coin collection from defeated enemies
+- **Inventory Management**: Simple potion tracking and health display
+- **Wave System**: Progressive difficulty with increasing enemy counts
 
-### 1. Dedenie (Inheritance)
-- **Hierarchia postáv**:
-   - `Character` (základná trieda) → `Player` a `Enemy`
-   - `Enemy` → `Zombie` (špeciálny typ nepriateľa)
-- **Hierarchia predmetov**:
-   - `Item` → `Collectible` → `Potion` → (`HealPotion`, `StrengthPotion`)
-   - `Item` → `Collectible` → `Coins` → (`GoldCoin`, `SilverCoin`)
+### Enemy Types
 
-### 2. Zapuzdrenie (Encapsulation)
-- **Príklady**:
-   - Privátne premenné: `private int health`, `private float x, y`
-   - Verejné metódy: `getHealth()`, `setPosition()`
-   - Trieda `Inventory` kontroluje prístup k predmetom.
+- **Standard Zombies**: Basic enemies that attack in groups
+- **Slow Zombies**: Higher resistance and more health points
+- **Fast Zombies**: Faster movement but fewer health points
 
-### 3. Polymorfizmus (Polymorphism)
-- **Prekonávanie metód**:
-   - `Potion.use()`: Rôzne implementácie v `HealPotion` a `StrengthPotion`.
-   - `Collectible.collect()`: Odlišné správanie pre `Potion` a `Coins`.
-- **Runtime method dispatch**:
-   - `Potion.use()` sa volá podľa skutočného typu (`Heal`/`Strength`).
-   - `collect()` funguje rozdielne pre `Potion` a `Coins`.
+### Visual Elements
 
-### 4. Abstrakcia (Abstraction)
-- **Abstraktné triedy**:
-   - `Character`: Spoločné vlastnosti postáv.
-   - `Item`: Základ pre herné predmety.
-- **Rozhrania**:
-   - `Collectible`: Povinné metódy pre zberateľné predmety.
+- Real-time HUD updates
+- Character sprite animations
+- Enemy AI with pursuit behavior
+- Collision detection system
 
-### 5. Rozhrania (Interfaces)
-- **Collectible**:
-   - Implementované v `Potion` a `Coins` s vlastnou logikou `collect()`.
-- **GUI ovládanie**:
-   - `PlayerGunController` implementuje `KeyListener` a `MouseListener`.
+## Installation & Setup
 
-## 6. Singleton vzor
-- **ScoreCounter**:
-   - Jediná inštancia cez `getInstance()`.
-   - Globálny prístup k hernému skóre.
+### Prerequisites
 
----
+- Java 21 or higher
+- Maven 3.6 or higher
 
-# Záver projektu Last Survivor
+### Building the Project
 
-## Hlavné princípy OOP
-- ✅ **Dedenie**: Logická hierarchia postáv (`Character → Player/Enemy`) a predmetov (`Item → Potion/Coins`).
-- ✅ **Zapuzdrenie**: Dáta chránené gettermi a settermi.
-- ✅ **Polymorfizmus**: Rovnaké metódy s rôznym správaním (`use()`, `collect()`).
+```bash
+# Clone the repository
+git clone <repository-url>
+cd LastSurvivor
 
-## Výhody implementácie
-- ✔ **Jednoduché rozširovanie**: Nové typy postáv/predmetov s minimálnymi úpravami.
-- ✔ **Prehľadnosť**: Oddelenie logiky, GUI a ovládania.
-- ✔ **Flexibilita**: Dynamické správanie objektov podľa typu.
+# Compile the project
+mvn clean compile
 
-## Možné vylepšenia
-- **Návrhové vzory**: Použitie Factory na tvorbu predmetov.
-- **Testovanie**: Rozšírenie unit testov pre kľúčové časti.
+# Run the game
+mvn exec:java -Dexec.mainClass="Main.GUI.MainApp"
+```
 
-## Záverečné hodnotenie
-Projekt úspešne aplikuje OOP princípy, čo vedie k:
-- **Modulárnemu dizajnu**: Jasne oddelené časti.
-- **Udržateľnému kódu**: Ľahko pochopiteľný a upraviteľný.
-- **Rozšíriteľnému systému**: Jednoduché pridávanie nových funkcií.
+### Alternative Execution
+
+```bash
+# Build JAR file
+mvn clean package
+
+# Run the JAR
+java -jar target/Last_Survivor-1.0-SNAPSHOT.jar
+```
+
+## How to Play
+
+### Controls
+
+- **W, A, S, D**: Move character (up, left, down, right)
+- **Mouse**: Aim and shoot projectiles
+- **Spacebar**: Sword attack (close combat)
+- **1**: Use healing potion
+- **2**: Use strength potion
+
+### Gameplay Tips
+
+1. **Movement**: Keep moving to avoid zombie swarms
+2. **Combat**: Use ranged attacks for safety, melee for close encounters
+3. **Resources**: Collect coins to increase score and potions for survival
+4. **Strategy**: Manage your inventory wisely - save potions for critical moments
+
+## Game Architecture
+
+The game follows a modular architecture with clear separation of concerns:
+
+### Core Components
+
+- **Game Logic**: Character behavior, combat mechanics, scoring
+- **GUI Layer**: User interface, rendering, input handling
+- **Utilities**: Helper classes for serialization, random generation, exceptions
+
+### Key Systems
+
+- **Character System**: Player and enemy management
+- **Inventory System**: Item collection and usage
+- **Collision System**: Detection and response
+- **Scoring System**: Point calculation and tracking
+
+## Class Hierarchy
+
+![Class Hierarchy](img.png)
+
+### Character Hierarchy
+
+```
+Character (Abstract)
+├── Player
+└── Enemy
+    └── Zombie
+        ├── BigZombie
+        └── FastZombie
+```
+
+### Item Hierarchy
+
+```
+Item (Abstract)
+└── Collectible (Interface)
+    ├── Potion (Abstract)
+    │   ├── HealPotion
+    │   └── StrengthPotion
+    └── Coins (Abstract)
+        ├── GoldCoin
+        └── SilverCoin
+```
+
+### Weapon Hierarchy
+
+```
+Weapon (Abstract)
+├── Gun
+└── Sword
+```
+
+## OOP Principles Implementation
+
+### 1. Inheritance
+
+- **Character Hierarchy**: `Character` → `Player` and `Enemy`
+- **Item Hierarchy**: `Item` → `Collectible` → `Potion`/`Coins`
+- **Weapon Hierarchy**: `Weapon` → `Gun`/`Sword`
+
+### 2. Encapsulation
+
+- Private fields with public getters/setters
+- Protected access for inheritance
+- Controlled access through methods
+- Example: `private int health` with `getHealth()` and `setHealth()`
+
+### 3. Polymorphism
+
+- Method overriding in subclasses
+- Runtime method dispatch
+- Interface implementations with different behaviors
+- Example: `Potion.use()` behaves differently for `HealPotion` vs `StrengthPotion`
+
+### 4. Abstraction
+
+- Abstract classes: `Character`, `Item`, `Weapon`
+- Interfaces: `Collectible`, `GameStateObserver`
+- Common behavior definition with specific implementations
+
+## Design Patterns
+
+### Factory Pattern
+
+- **EnemyFactory**: Creates different enemy types
+- **PotionFactory**: Generates various potion types
+- **CoinFactory**: Produces different coin types
+
+### Observer Pattern
+
+- **GameStateObserver**: Notifies UI components of state changes
+- **GameStateSubject**: Manages observer subscriptions
+
+### Singleton Pattern
+
+- **ScoreCounter**: Global access to game scoring system
+
+### Strategy Pattern
+
+- **Collision Handlers**: Different collision strategies for different item types
+
+## Project Structure
+
+```
+src/
+├── Main/
+│   ├── Game/                    # Core game logic
+│   │   ├── Character/          # Player and enemy classes
+│   │   ├── Collectible/        # Items and collectibles
+│   │   ├── Weapons/            # Weapon implementations
+│   │   ├── Inventory.java      # Inventory management
+│   │   └── ScoreCounter.java   # Scoring system
+│   ├── GUI/                    # User interface
+│   │   ├── MainApp.java        # Main application entry point
+│   │   ├── HUD.java            # Heads-up display
+│   │   ├── Player/             # Player GUI components
+│   │   ├── Enemy/              # Enemy GUI components
+│   │   ├── Coins/              # Coin display
+│   │   └── Potions/            # Potion display
+│   ├── Resources/              # Game assets
+│   │   └── Images/             # Sprite images
+│   └── Utils/                  # Utility classes
+│       ├── Exceptions/         # Custom exceptions
+│       ├── Observer/           # Observer pattern implementation
+│       ├── RandomBorderCoordinates.java
+│       └── SerializationUtils.java
+└── test/                       # Unit tests
+```
+
+## Development
+
+### Code Quality
+
+- Comprehensive unit test coverage
+- Logging with Log4j2
+- Exception handling with custom exceptions
+- Clean code principles
+
+### Build System
+
+- Maven for dependency management
+- Automated compilation and packaging
+- Test execution integration
+
+### Dependencies
+
+- Java 21
+- Log4j2 for logging
+- JUnit for testing
+
+## Testing
+
+The project includes comprehensive unit tests covering:
+
+- **Character Tests**: Player and enemy behavior
+- **Item Tests**: Collectible functionality
+- **Factory Tests**: Object creation patterns
+- **Utility Tests**: Helper class functionality
+- **Exception Tests**: Error handling
+
+### Running Tests
+
+```bash
+# Run all tests
+mvn test
+
+# Run specific test class
+mvn test -Dtest=PlayerTest
+
+# Generate test reports
+mvn surefire-report:report
+```
+
+### Test Coverage
+
+- Core game mechanics: ✅
+- Character interactions: ✅
+- Item collection: ✅
+- Factory patterns: ✅
+- Exception handling: ✅
+
+## Future Enhancements
+
+### Potential Improvements
+
+- **Additional Enemy Types**: More variety in enemy behaviors
+- **Power-ups**: Temporary abilities and enhancements
+- **Level System**: Progressive difficulty and unlockable content
+- **Sound Effects**: Audio feedback for actions
+- **Save System**: Game state persistence
+- **Multiplayer**: Cooperative or competitive modes
+
+### Technical Improvements
+
+- **Performance Optimization**: Rendering and collision detection
+- **Code Refactoring**: Further modularization
+- **Documentation**: API documentation with JavaDoc
+- **CI/CD**: Automated testing and deployment
+
+## Conclusion
+
+The Last Survivor project successfully demonstrates:
+
+- **Modular Design**: Clear separation of concerns
+- **Maintainable Code**: Easy to understand and modify
+- **Extensible System**: Simple addition of new features
+- **OOP Best Practices**: Proper implementation of core principles
+- **Comprehensive Testing**: Reliable and robust codebase
+
+The game provides an engaging survival experience while showcasing solid software engineering practices and object-oriented design principles.
