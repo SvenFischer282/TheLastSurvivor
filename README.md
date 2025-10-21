@@ -41,6 +41,7 @@ Java-based 2D action game using Swing GUI framework
 - **Score System**: Based on coin collection from defeated enemies
 - **Inventory Management**: Simple potion tracking and health display
 - **Wave System**: Progressive difficulty with increasing enemy counts
+- **Database Integration**: Player scores are saved to a MongoDB database
 
 ### Enemy Types
 
@@ -55,12 +56,32 @@ Java-based 2D action game using Swing GUI framework
 - Enemy AI with pursuit behavior
 - Collision detection system
 
+## Database
+
+**Last Survivor** uses MongoDB to store player scores and display a leaderboard.
+
+### MongoManager
+
+The `MongoManager` class handles the connection to the MongoDB database. It is implemented as a Singleton to ensure that only one connection is created. The connection string is read from a `.env` file.
+
+### Leaderboard
+
+The `GameOverPanel` class fetches the top 10 players from the database and displays them in a leaderboard. The player's score is saved to the database at the end of each game.
+
 ## Installation & Setup
 
 ### Prerequisites
 
 - Java 21 or higher
 - Maven 3.6 or higher
+
+### Environment Variables
+
+Create a `.env` file in the root of the project and add the following line:
+
+```
+MONGO_URI="your_mongo_db_connection_string"
+```
 
 ### Building the Project
 
@@ -112,6 +133,7 @@ The game follows a modular architecture with clear separation of concerns:
 - **Game Logic**: Character behavior, combat mechanics, scoring
 - **GUI Layer**: User interface, rendering, input handling
 - **Utilities**: Helper classes for serialization, random generation, exceptions
+- **Database**: `MongoManager` for database connection and operations
 
 ### Key Systems
 
@@ -200,6 +222,7 @@ Weapon (Abstract)
 ### Singleton Pattern
 
 - **ScoreCounter**: Global access to game scoring system
+- **MongoManager**: Global access to the MongoDB database connection
 
 ### Strategy Pattern
 
@@ -253,6 +276,7 @@ src/
 - Java 21
 - Log4j2 for logging
 - JUnit for testing
+- MongoDB Java Driver for database connection
 
 ## Testing
 

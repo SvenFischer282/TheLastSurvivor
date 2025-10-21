@@ -60,8 +60,8 @@ public class ScoreCounter implements GameStateSubject {
      * Gets the current score.
      * @return The current score value
      */
-    public int getScore() {
-        return score;
+    public static int getScore() {
+        return getInstance().score;
     }
 
     /**

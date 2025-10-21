@@ -24,6 +24,7 @@ import javax.swing.*;
  */
 public class Player extends Character implements GameStateSubject {
     private float vx, vy;
+    private String name;
     private int health;
     private float speed;
     private boolean rotation;
@@ -256,6 +257,14 @@ public class Player extends Character implements GameStateSubject {
      */
     public Sword getSword() {
         return sword;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

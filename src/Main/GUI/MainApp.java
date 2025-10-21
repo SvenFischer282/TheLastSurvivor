@@ -1,5 +1,6 @@
 package Main.GUI;
 
+import Database.MongoManager;
 import Main.GUI.Enemy.EnemiesController;
 import Main.GUI.Player.PlayerGunController;
 import Main.Game.Character.Enemy;
@@ -15,16 +16,24 @@ import Main.Game.Collectible.Potions.StrengthPotion;
 import Main.Game.Inventory;
 import Main.Game.Collectible.Potions.PotionCollisionHandler;
 import Main.Game.ScoreCounter;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 
 /**
  * The main application class that initializes and runs the game, managing components, controllers, and the game loop with a wave system.
@@ -32,12 +41,33 @@ import java.util.concurrent.TimeUnit;
 public class MainApp {
     private static final Logger logger = LoggerFactory.getLogger(MainApp.class);
 
+
     /**
      * Entry point for the game application.
+     *
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
-        // Initialize player and inventory
+
+        MongoDatabase database = null;
+        try {
+            database = MongoManager.getDatabase();
+            // Optional: Log that you got the database, though MongoManager already logs success
+            logger.info("Database instance acquired successfully.");
+
+        } catch (Exception e) {
+            // Handle fatal connection failure
+            logger.error("FATAL: Could not initialize MongoDB connection. Exiting application.", e);
+            // Optionally exit if the database is essential
+            // System.exit(1);
+        }
+        MongoCollection<Document> playerCollection = database.getCollection("test");
+
+//        for (Document playerDocument : playerCollection.find()) {
+//            System.out.println(playerDocument.toJson());
+//        }
+
+
         Player player = new Player(400, 300);
         Inventory inventory = new Inventory(player);
 
@@ -80,14 +110,28 @@ public class MainApp {
         frame.setLocationRelativeTo(null);
 
         // Create StartPanel with button action
+        // 1. Declare a final array to hold your StartPanel instance.
+        final StartPanel[] panelHolder = new StartPanel[1];
+
+// 2. Initialize the StartPanel, referencing the holder inside the lambda.
         StartPanel startPanel = new StartPanel(e -> {
+            // Access the panel using the holder array.
+            String playerName = panelHolder[0].getPlayerName();
+            if (Objects.equals(playerName, "")) {
+                player.setName("Unknown");
+            } else {
+                player.setName(playerName);
+            }
             frame.setContentPane(mainContainer);
             frame.revalidate();
             frame.repaint();
             scoreCounter.setScore(0);
             // Setup controllers when the game actually starts
-            setupControllers(mainContainer, player, inventory, enemyList, enemySpawner, potionSpawner, potionList, coins, frame);
+            setupControllers(mainContainer, player, inventory, enemyList, enemySpawner, potionSpawner, potionList, coins, frame, playerCollection, scoreCounter);
         });
+
+// 3. Assign the newly created instance to the holder.
+        panelHolder[0] = startPanel;
 
         frame.setContentPane(startPanel);
         frame.setVisible(true);
@@ -102,8 +146,8 @@ public class MainApp {
             PotionSpawner potionSpawner,
             List<Potion> potionList,
             List<Coins> coins,
-            JFrame frame
-    ) {
+            JFrame frame,
+            MongoCollection<Document> playerCollection, ScoreCounter scoreCounter) {
         PlayerGunController playerController = new PlayerGunController(player, inventory);
         mainContainer.getPlayerGunView().addKeyListener(playerController);
         mainContainer.getPlayerGunView().addMouseListener(playerController);
@@ -134,7 +178,47 @@ public class MainApp {
                         enemy.cleanup();
                     }
                     SwingUtilities.invokeLater(() -> {
-                        frame.setContentPane(new GameOverPanel(frame, player));
+
+                        String playerName = player.getName(); // Get name once
+                        int currentScore = ScoreCounter.getInstance().getScore();
+
+                        // 1. Define the FILTER using the FIELD NAME "player"
+                        Bson filter_player = Filters.eq("player", playerName);
+
+                        // 2. Attempt to FIND the player
+                        Document db_player = playerCollection.find(filter_player).first();
+
+                        if (db_player == null) {
+                            // Player DOES NOT exist: Insert a NEW document
+                            // NOTE: We use "player" as the key, matching the filter above.
+                            Document newPlayerDocument = new Document()
+                                    .append("player", playerName)
+                                    .append("score", currentScore);
+
+                            playerCollection.insertOne(newPlayerDocument);
+                            logger.info("Player {} added to database with initial score: {}", playerName, currentScore);
+
+                        } else {
+                            // Player EXISTS: Check and potentially UPDATE the score
+                            Integer db_Score = db_player.getInteger("score");
+
+                            // Check if the current score is higher (handling null/missing score gracefully)
+                            if (db_Score == null || currentScore > db_Score) {
+
+                                // 3. Define the UPDATE operation using the FIELD NAME "score"
+                                Bson updateOperation = new Document("$set", new Document("score", currentScore));
+
+                                // Perform the update using the filter
+                                playerCollection.updateOne(filter_player, updateOperation);
+                                logger.info("High score updated for {}: New score is {}", playerName, currentScore);
+
+                            } else {
+                                logger.info("Player {} already exists. Current score {} is not a new high score (current best: {}).",
+                                        playerName, currentScore, db_Score);
+                            }
+                        }
+                        // Display the Game Over Panel
+                        frame.setContentPane(new GameOverPanel(frame, player, playerCollection));
                         frame.revalidate();
                         frame.repaint();
                     });
@@ -207,9 +291,9 @@ public class MainApp {
         }, 0, 50, TimeUnit.MILLISECONDS); // Check 20x per second
 
         // Shutdown on window close
-        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+        frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+            public void windowClosing(WindowEvent windowEvent) {
                 executor.shutdown();
                 potionExecutor.shutdown();
                 collisionExecutor.shutdown();
