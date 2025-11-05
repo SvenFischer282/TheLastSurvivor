@@ -1,14 +1,15 @@
 package Main.Game.Collectible.Potions;
 
-import Main.Game.Character.Player;
-import Main.Game.Collectible.Collectible;
-import Main.Game.Inventory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import Main.Game.Character.Player;
+import Main.Game.Collectible.Collectible;
+import Main.Game.Inventory;
 
 /**
  * A temporary strength-boosting potion that increases player damage after a delay.
@@ -47,7 +48,7 @@ public class StrengthPotion extends Potion implements Collectible {
             double effectStrength = this.getEffectStrength();
 
             // Immediately increase damage
-            player.setDamage((int)originalDamage +(int) effectStrength);
+            player.setDamage(((int)originalDamage +(int) effectStrength)*2);
             logger.info("Strength potion used: Damage increased by " + effectStrength + " to " + player.getDamage());
 
             // Schedule damage restoration after 10 seconds
@@ -56,7 +57,7 @@ public class StrengthPotion extends Potion implements Collectible {
                     player.setDamage((int) originalDamage);
                     logger.info("Strength potion expired: Damage restored to " + originalDamage);
                 }
-            }, 5, TimeUnit.SECONDS);
+            }, 10, TimeUnit.SECONDS);
         }}
 
     /**

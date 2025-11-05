@@ -1,16 +1,26 @@
 package Main.GUI.Coins;
 
-import Main.Game.Collectible.Coins.Coins;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.swing.JComponent;
+
+import Main.Game.Collectible.Coins.Coins;
 
 /**
  * A JComponent for rendering coins in the game.
  */
 public class CoinsView extends JComponent {
     private final List<Coins> coins;
+    private Image goldCoinImage;
+    private Image silverCoinImage;
 
     /**
      * Constructs a CoinsView with a list of coins to render.
@@ -18,6 +28,47 @@ public class CoinsView extends JComponent {
      */
     public CoinsView(List<Coins> coins) {
         this.coins = coins;
+        setOpaque(false);
+        loadCoinSprites();
+    }
+
+    /**
+     * Loads coin sprite images from resources.
+     */
+    private void loadCoinSprites() {
+        try {
+            goldCoinImage = ImageIO.read(getClass().getResource("/Images/gold_coin.png"));
+        } catch (IOException | IllegalArgumentException e) {
+            System.err.println("Error loading gold coin image:");
+            e.printStackTrace();
+            goldCoinImage = createPlaceholderImage(Color.YELLOW);
+        }
+
+        try {
+            
+            silverCoinImage = ImageIO.read(getClass().getResource("/Images/silver_coin.png"));
+        } catch (IOException | IllegalArgumentException e) {
+            // If WEBP fails, try PNG
+            
+                System.err.println("Error loading silver coin image:");
+                e.printStackTrace();
+                silverCoinImage = createPlaceholderImage(Color.LIGHT_GRAY);
+            
+        }
+    }
+
+    /**
+     * Creates a placeholder image for when sprites fail to load.
+     * @param color The color of the placeholder image.
+     * @return A 32x32 BufferedImage filled with the specified color.
+     */
+    private Image createPlaceholderImage(Color color) {
+        BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = img.createGraphics();
+        g2d.setColor(color);
+        g2d.fillOval(0, 0, 32, 32);
+        g2d.dispose();
+        return img;
     }
 
     /**
@@ -31,23 +82,23 @@ public class CoinsView extends JComponent {
         for (Coins coin : coins) {
             int x = coin.getX();
             int y = coin.getY();
+            Image coinImage = null;
 
-            // Set color based on coin type
+            // Select appropriate sprite based on coin value
             if (coin.getValue() == 5) {
-                g.setColor(Color.YELLOW);
+                coinImage = goldCoinImage;
             } else if (coin.getValue() == 2) {
-                g.setColor(Color.LIGHT_GRAY);
-            } else {
-                g.setColor(Color.WHITE);
+                coinImage = silverCoinImage;
             }
 
-            // Draw the coin as a circle
-            g.fillOval(x - 8, y - 8, 16, 16);
-
-            // Optional label
-            g.setColor(Color.BLACK);
-            g.setFont(new Font("Arial", Font.PLAIN, 10));
-            g.drawString(coin.getValue() + "", x - 2, y + 2);
+            // Draw the coin sprite
+            if (coinImage != null) {
+                g.drawImage(coinImage, x - 16, y - 16, 32, 32, this);
+            } else {
+                // Fallback to colored circle if image not found
+                g.setColor(Color.WHITE);
+                g.fillOval(x - 8, y - 8, 16, 16);
+            }
         }
     }
 
