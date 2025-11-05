@@ -1,5 +1,11 @@
 package Main.GUI;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.util.List;
+
+import javax.swing.JLayeredPane;
+
 import Main.GUI.Coins.CoinsView;
 import Main.GUI.Enemy.EnemiesView;
 import Main.GUI.Player.PlayerGunView;
@@ -10,10 +16,6 @@ import Main.Game.Collectible.Coins.Coins;
 import Main.Game.Collectible.Potions.Potion;
 import Main.Game.Inventory;
 import Main.Game.ScoreCounter;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.List;
 
 /**
  * Main container for all game views (player, enemies, potions, coins, HUD).
@@ -37,7 +39,7 @@ public class MainContainer extends JLayeredPane {
      */
     public MainContainer(Player player, List<Enemy> enemies, Inventory inventory, List<Potion> potions, List<Coins> coins) {
         playerGunView = new PlayerGunView(player);
-        enemiesView = new EnemiesView(enemies);
+        enemiesView = new EnemiesView(enemies, player);
         potionsView = new PotionsView(potions);
         coinsView = new CoinsView(coins);
 

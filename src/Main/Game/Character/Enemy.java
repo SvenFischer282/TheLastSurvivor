@@ -1,14 +1,15 @@
 package Main.Game.Character;
 
-import Main.GUI.MainApp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import Main.GUI.MainApp;
 
 /**
  * Represents an enemy character in the game.
@@ -99,12 +100,24 @@ public class Enemy extends Character {
     }
 
     /**
+     * Gets the hitbox size for this enemy based on its type.
+     * @return The hitbox radius/half-size.
+     */
+    private float getHitboxSize() {
+        if (this instanceof Main.Game.Character.Zombie.BigZombie) {
+            return 50f; // Big zombies are 100x100, so hitbox is 50
+        }
+        return 32f; // Regular zombies are 64x64, so hitbox is 32
+    }
+
+    /**
      * Moves enemy toward player, avoiding collisions with other enemies.
      * @param player The player to move toward.
      * @param deltaTime Time since last update.
      */
     void moveToPlayer(Player player, float deltaTime) {
-        float hitboxRadius = 32;
+        float hitboxSize = getHitboxSize();
+        float hitboxRadius = hitboxSize * 1.5f; // Attack range slightly larger than hitbox
         float dx = player.getX() - this.getX();
         float dy = player.getY() - this.getY();
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
@@ -118,14 +131,18 @@ public class Enemy extends Character {
         float nextY = this.getY() + (dy * this.speed * deltaTime);
 
         boolean canMove = true;
-        if (allEnemies != null) {
-            for (Enemy other : allEnemies) {
+        List<Enemy> enemiesList = allEnemies;
+        if (enemiesList != null) {
+            float myHitboxSize = getHitboxSize();
+            for (Enemy other : enemiesList) {
                 if (other == this) continue;
+                float otherHitboxSize = other instanceof Main.Game.Character.Zombie.BigZombie ? 50f : 32f;
+                float minDistance = myHitboxSize + otherHitboxSize;
                 float dist = (float) Math.sqrt(
                         (nextX - other.getX()) * (nextX - other.getX()) +
                                 (nextY - other.getY()) * (nextY - other.getY())
                 );
-                if (dist < 32) {
+                if (dist < minDistance) {
                     canMove = false;
                     break;
                 }
@@ -163,12 +180,13 @@ public class Enemy extends Character {
      */
     void hitByBullet(Player player) {
         if (!canBeHitByBullet) return;
+        float hitboxSize = getHitboxSize();
         for (Player.Gun.Bullet bullet : player.getGun().getBullets()) {
             if (!bullet.isBulletActive()) continue;
             float bulletX = bullet.getBulletPosX();
             float bulletY = bullet.getBulletPosY();
-            if (bulletX > this.getX() - 16 && bulletX < this.getX() + 16 &&
-                    bulletY > this.getY() - 16 && bulletY < this.getY() + 16) {
+            if (bulletX > this.getX() - hitboxSize && bulletX < this.getX() + hitboxSize &&
+                    bulletY > this.getY() - hitboxSize && bulletY < this.getY() + hitboxSize) {
                 this.takeDamage(player.getDamage());
                 logger.info("Player hit enemy with bullet");
                 bullet.deactivate();
@@ -185,41 +203,43 @@ public class Enemy extends Character {
      */
     void hitBySword(Player player) {
         if (!canBeHitBySword || !player.getSword().isSwinging()) return;
+        float hitboxSize = getHitboxSize();
         int centerX = (int) player.getX() + 32;
         int centerY = (int) player.getY() + 32;
         int hitboxX, hitboxY, hitboxWidth, hitboxHeight;
 
         switch (player.getDirection()) {
-            case RIGHT:
+            case RIGHT -> {
                 hitboxX = centerX;
                 hitboxY = centerY - 32;
                 hitboxWidth = 64;
                 hitboxHeight = 64;
-                break;
-            case LEFT:
+            }
+            case LEFT -> {
                 hitboxX = centerX - 64;
                 hitboxY = centerY - 32;
                 hitboxWidth = 64;
                 hitboxHeight = 64;
-                break;
-            case UP:
+            }
+            case UP -> {
                 hitboxX = centerX - 16;
                 hitboxY = centerY - 96;
                 hitboxWidth = 32;
                 hitboxHeight = 96;
-                break;
-            case DOWN:
+            }
+            case DOWN -> {
                 hitboxX = centerX - 16;
                 hitboxY = centerY;
                 hitboxWidth = 32;
                 hitboxHeight = 96;
-                break;
-            default:
+            }
+            default -> {
                 return;
+            }
         }
 
-        if (this.getX() + 16 > hitboxX && this.getX() - 16 < hitboxX + hitboxWidth &&
-                this.getY() + 16 > hitboxY && this.getY() - 16 < hitboxY + hitboxHeight) {
+        if (this.getX() + hitboxSize > hitboxX && this.getX() - hitboxSize < hitboxX + hitboxWidth &&
+                this.getY() + hitboxSize > hitboxY && this.getY() - hitboxSize < hitboxY + hitboxHeight) {
             this.takeDamage(player.getSword().getDamage());
             canBeHitBySword = false;
             scheduler.schedule(() -> canBeHitBySword = true, 300, TimeUnit.MILLISECONDS);
