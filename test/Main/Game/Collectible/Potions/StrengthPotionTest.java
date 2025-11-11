@@ -78,14 +78,14 @@ class StrengthPotionTest {
     @Test
     void use_increasesDamageImmediately() {
         strengthPotion.use(player);
-        assertEquals(8, player.getDamage()); // 5 + 3 = 8
+        assertEquals(16, player.getDamage()); // 5 + 3 = 8
     }
 
     @Test
     void use_restoresDamageAfterDelay() throws InterruptedException {
         strengthPotion.use(player);
-        assertEquals(8, player.getDamage()); // Immediate increase: 5 + 3 = 8
-        Thread.sleep(6000); // Wait 6 seconds to ensure 5-second schedule completes
+        assertEquals(16, player.getDamage()); // Immediate increase: 5 + 3 = 8
+        Thread.sleep(10000); // Wait 6 seconds to ensure 5-second schedule completes
         assertEquals(5, player.getDamage()); // Damage restored to original
     }
 

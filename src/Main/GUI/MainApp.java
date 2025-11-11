@@ -190,7 +190,6 @@ public class MainApp {
 
                         if (db_player == null) {
                             // Player DOES NOT exist: Insert a NEW document
-                            // NOTE: We use "player" as the key, matching the filter above.
                             Document newPlayerDocument = new Document()
                                     .append("player", playerName)
                                     .append("score", currentScore);
